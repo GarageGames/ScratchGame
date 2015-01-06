@@ -1,0 +1,1 @@
+Location for final art files ready for integration
