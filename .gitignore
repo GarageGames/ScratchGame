@@ -1,0 +1,96 @@
+# Dev Files #
+###################
+*.xcworkspace
+*.xcuserdatad
+.LSOverride
+/tmp/*
+*.user
+*.sdf
+*.suo
+*.dir
+*.opensdf
+*.idea
+*.dSYM
+*.res
+*.cache
+*.exports
+*.opt
+*.tmp
+*.Debug.cachefile
+*.cpl
+*.project
+*.json
+
+# Compiled source #
+###################
+*.pidb
+*.userprefs
+*.[Oo]bj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.[Cc]ache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.sdf
+ipch/
+obj/
+[Bb]in
+[Dd]ebug*/
+[Rr]elease*/
+Ankh.NoLoad
+*.com
+*.class
+*.so
+*.idb
+*.pdb
+*.lastbuildstate
+*.unsuccessfulbuild
+*.manifest
+*.tlog
+
+# Logs and databases #
+######################
+*.log
+*.sql
+
+
+# Tooling #
+###########
+_ReSharper*/
+*.resharper
+[Tt]est[Rr]esult*
+
+#Project files
+[Bb]uild/
+
+#Subversion files
+.svn
+
+# Office Temp Files
+~$*
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
