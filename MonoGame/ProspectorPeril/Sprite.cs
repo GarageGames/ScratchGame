@@ -43,6 +43,13 @@ namespace ProspectorPeril
         /// </summary>
         public int Layer = 0;
 
+        public Vector2 TextureCenter
+        {
+            get
+            {
+                return new Vector2((Textures[Frame].Width * Size.X) / 2f, (Textures[Frame].Height * Size.Y) / 2f);
+            }
+        }
         /// <summary>
         /// Default constructor
         /// </summary>

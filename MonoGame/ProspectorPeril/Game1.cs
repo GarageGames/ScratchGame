@@ -56,7 +56,7 @@ namespace ProspectorPeril
         #region Game variables
         GameState gameState; 
         Sprite background;
-        Sprite ground;
+        Sprite launcher;
         Sprite fire;
         Sprite hudContainer;
         
@@ -107,14 +107,14 @@ namespace ProspectorPeril
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             #region Load textures
-            var playerTex = Content.Load<Texture2D>("MainCharacter.png");
-            var splashTex = Content.Load<Texture2D>("GGISplashScreen.png");
-            var playButtonTex = Content.Load<Texture2D>("PlayButton.png");
-            var tintedLayerTex = Content.Load<Texture2D>("TintedLayer.png");
-            var backgroundTex = Content.Load<Texture2D>("BG_rocks.png");
-            var hudTex = Content.Load<Texture2D>("HUDContainer.png");
-            var groundTex = Content.Load<Texture2D>("Ground.png");
-            var fireTex = Content.Load<Texture2D>("Ground.png");
+            var playerTex = Content.Load<Texture2D>("character_prospector/PPeril_character_Static.png");
+            var splashTex = Content.Load<Texture2D>("Placeholders/GGISplashScreen.png");
+            var playButtonTex = Content.Load<Texture2D>("Placeholders/PlayButton.png");
+            var tintedLayerTex = Content.Load<Texture2D>("Placeholders/TintedLayer.png");
+            var backgroundTex = Content.Load<Texture2D>("BG/Background.png");
+            var hudTex = Content.Load<Texture2D>("Placeholders/HUDContainer.png");
+            var launcherTex = Content.Load<Texture2D>("launcher/launcher01.png");
+            var fireTex = Content.Load<Texture2D>("Placeholders/Ground.png");
             #endregion
 
             #region Create menu sprites
@@ -135,16 +135,17 @@ namespace ProspectorPeril
             hudContainer = new Sprite(hudTex);
             hudContainer.Position.Y = graphics.GraphicsDevice.Viewport.Height - hudTex.Height;
 
-            ground = new Sprite(groundTex);
-            ground.Position.Y = hudContainer.Position.Y - groundTex.Height;
-
+            launcher = new Sprite(launcherTex);
+            launcher.Size = new Vector2(0.75f, 0.75f);
+            launcher.Position = new Vector2(36.5f, 106.5f);
+            
             fire = new Sprite(fireTex);
             fire.Position.Y = hudContainer.Position.Y;
 
             player = new Sprite(playerTex);
-            var playerTextureCenter = new Vector2(playerTex.Width / 2f, playerTex.Height / 2f);
-            player.Position.X = viewportCenter.X - playerTextureCenter.X;
-            player.Position.Y = ground.Position.Y - playerTex.Height;
+            player.Size = new Vector2(0.6f, 0.6f);
+            player.Position.X = viewportCenter.X - player.TextureCenter.X;
+            player.Position.Y = 116;
             #endregion
         }
 
@@ -158,6 +159,18 @@ namespace ProspectorPeril
 
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
         {
+            //if (currentKeyState.IsKeyDown(Keys.W))
+            //    player.Position.Y -= 0.5f;
+            
+            //if (currentKeyState.IsKeyDown(Keys.S))
+            //    player.Position.Y += 0.5f;
+            
+            //if (currentKeyState.IsKeyDown(Keys.A))
+            //    player.Position.X -= 0.5f;
+            
+            //if (currentKeyState.IsKeyDown(Keys.D))
+            //    player.Position.X += 0.5f;
+            
             #region Mouse Handling
             if (currentMouseState.LeftButton == ButtonState.Pressed)
                 lastMouseState = currentMouseState;
@@ -193,7 +206,7 @@ namespace ProspectorPeril
             {
                 playerState = PlayerState.Ascending;
                 speed = 45;
-                ground.Position.Y = graphics.GraphicsDevice.Viewport.Height;
+                launcher.Position.Y = graphics.GraphicsDevice.Viewport.Height;
                 gameState++;
             }
 
@@ -333,7 +346,7 @@ namespace ProspectorPeril
 
             // Begin drawing 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
-
+            
             switch(gameState)
             {
                 case GameState.Splash:
@@ -346,13 +359,13 @@ namespace ProspectorPeril
                     break;
                 case GameState.Launch:
                     background.Draw(spriteBatch);
-                    ground.Draw(spriteBatch);
+                    launcher.Draw(spriteBatch);
                     player.Draw(spriteBatch);
                     hudContainer.Draw(spriteBatch);
                     break;
                 case GameState.Running:                    
                     spriteBatch.Draw(background.Textures[0], background.Position, new Rectangle(0, (int)-scrollY, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height), Color.White);
-                    ground.Draw(spriteBatch);
+                    launcher.Draw(spriteBatch);
                     player.Draw(spriteBatch);
                     fire.Draw(spriteBatch);
 
