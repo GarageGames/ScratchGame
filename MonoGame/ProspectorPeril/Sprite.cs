@@ -13,6 +13,25 @@ namespace ProspectorPeril
     /// </summary>
     class Sprite
     {
+        class Animation
+        {
+            public string Name;
+            public int[] Frames;
+            public float TimePerFrame;
+
+            public Animation(string name, int[] frames, float timePerFrame)
+            {
+                Name = name;
+                Frames = frames;
+                TimePerFrame = timePerFrame;
+            }
+        }
+
+        /// <summary>
+        /// A collection of Animation objects, referenced by name
+        /// </summary>
+        private Dictionary<string, Animation> Animations = new Dictionary<string, Animation>();
+
         /// <summary>
         /// All the textures this sprite can use
         /// </summary>
@@ -29,9 +48,9 @@ namespace ProspectorPeril
         public Vector2 Position = Vector2.Zero;
 
         /// <summary>
-        /// Size of sprite on screen
+        /// Scale of sprite texture on screen
         /// </summary>
-        public Vector2 Size = new Vector2(1.0f, 1.0f);
+        public Vector2 Scale = new Vector2(1.0f, 1.0f);
 
         /// <summary>
         /// Whether the sprite should be drawn to the screen or not
@@ -39,17 +58,60 @@ namespace ProspectorPeril
         public bool Visible = true;
 
         /// <summary>
+        /// Determines if the Sprite should be running an animation
+        /// </summary>
+        bool IsAnimating = false;
+
+        /// <summary>
+        /// Timer for the currently playing animation
+        /// </summary>
+        float AnimationTimer = 0.0f;
+
+        /// <summary>
+        /// The index used to increment through the array of animation frames
+        /// </summary>
+        int CurrentAnimFrame = -1;
+
+        /// <summary>
+        /// The current animation being played
+        /// </summary>
+        Animation CurrentAnimation = null;
+
+        /// <summary>
         /// Order/depth of sprite on screen
         /// </summary>
         public int Layer = 0;
+
+        public float Width
+        {
+            get { return Textures[Frame].Width * Scale.X; }
+        }
+
+        public float Height
+        {
+            get { return Textures[Frame].Height * Scale.Y; }
+        }
+
+        public Vector2 Size
+        {
+            get
+            {
+                return new Vector2(Width, Height);
+            }
+        }
 
         public Vector2 TextureCenter
         {
             get
             {
-                return new Vector2((Textures[Frame].Width * Size.X) / 2f, (Textures[Frame].Height * Size.Y) / 2f);
+                return new Vector2(Width / 2f, Height / 2f);
             }
         }
+        
+        Vector2 MoveToDestination = Vector2.Zero;
+        
+        bool IsMoving = false;
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -78,6 +140,69 @@ namespace ProspectorPeril
         }
 
         /// <summary>
+        /// Add a new animation to the Sprite's animation collection
+        /// </summary>
+        /// <param name="name">ID of the animation</param>
+        /// <param name="frames">An array of texture frame indexes</param>
+        /// <param name="time">Time between each frame (milliseconds)</param>
+        public void AddAnimation(string name, int[] frames, float time)
+        {
+            Animations.Add(name, new Animation(name, frames, time));
+        }
+
+        /// <summary>
+        /// Play an animation
+        /// </summary>
+        /// <param name="animationname">The ID of the animation</param>
+        public void PlayAnimation(string animationname)
+        {
+            CurrentAnimation = Animations[animationname];
+
+            if (CurrentAnimation != null)
+            {
+                IsAnimating = true;
+                AnimationTimer = CurrentAnimation.TimePerFrame;
+                CurrentAnimFrame = 0;
+            }
+        }
+
+        public void MoveTo(Vector2 destination)
+        {
+            MoveToDestination = destination;
+            IsMoving = true;
+        }
+
+        /// <summary>
+        /// Basic update routine for Sprite
+        /// </summary>
+        /// <param name="gameTime">Current game time</param>
+        public void Update(GameTime gameTime)
+        {
+            // If the Sprite should be animating
+            if (IsAnimating)
+            {
+                // Set the Sprite's texture frame to the current animation "cell"
+                Frame = CurrentAnimation.Frames[CurrentAnimFrame];
+
+                // Reduce the animation timer
+                AnimationTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+                // If the timer is less than 0, we are ready for the next frame
+                if (AnimationTimer <= 0)
+                {
+                    // Increase the current animation frame by 1
+                    CurrentAnimFrame++;
+
+                    // If the current animation frame is more than the number of frames in the animation, stop animating
+                    if (CurrentAnimFrame >= CurrentAnimation.Frames.Length)
+                        IsAnimating = false;
+                    else
+                        AnimationTimer = CurrentAnimation.TimePerFrame;
+                }
+            }
+        }
+
+        /// <summary>
         /// Draw the sprite to the screen using the XNA/MonoGame stock drawing object
         /// </summary>
         /// <param name="spriteBatch">A valid SpriteBatch that does all the drawing for the game</param>
@@ -86,7 +211,7 @@ namespace ProspectorPeril
             var currentTexture = Textures[Frame];
 
             if (currentTexture != null)
-                spriteBatch.Draw(currentTexture, Position, null, Color.White, 0, Vector2.Zero, Size, SpriteEffects.None, Layer);
+                spriteBatch.Draw(currentTexture, Position, null, Color.White, 0, Vector2.Zero, Scale, SpriteEffects.None, Layer);
         }
     }
 }
