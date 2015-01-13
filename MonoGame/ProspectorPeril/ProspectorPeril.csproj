@@ -184,6 +184,9 @@
     <Content Include="Content\HUD\number_9.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\HUD\PlayButton.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\launcher\launcher01.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

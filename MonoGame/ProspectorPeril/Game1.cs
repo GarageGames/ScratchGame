@@ -241,7 +241,7 @@ namespace ProspectorPeril
             var splashTex = Content.Load<Texture2D>("Placeholders/GGISplashScreen.png");
             splashScreen = new Sprite(splashTex); 
             
-            var playButtonTex = Content.Load<Texture2D>("Placeholders/PlayButton.png");
+            var playButtonTex = Content.Load<Texture2D>("HUD/PlayButton.png");
             playButton = new Sprite(playButtonTex);
             
             var playTextureCenter = new Vector2(playButtonTex.Width / 2f, playButtonTex.Height / 2f);
@@ -250,14 +250,15 @@ namespace ProspectorPeril
             var tintedLayerTex = Content.Load<Texture2D>("Placeholders/TintedLayer.png");
             tintedLayer = new Sprite(tintedLayerTex); 
             
-            var hudTex = Content.Load<Texture2D>("Placeholders/HUDContainer.png");
+            var hudTex = Content.Load<Texture2D>("HUD/HUD.png");
             hudContainer = new Sprite(hudTex);
             hudContainer.Position.Y = GraphicsViewport.Height - hudTex.Height;
 
-            //for(int i = 0; i < 3; i++)
-            //{
-            //    hearts[i] = new Sprite()
-            //}
+            for(int i = 0; i < 3; i++)
+            {
+                var texture = Content.Load<Texture2D>("HUD/heart.png");
+                hearts[i] = new Sprite(texture);
+            }
         }
 
         public void CreateEnvironment()
@@ -382,9 +383,9 @@ namespace ProspectorPeril
                     break;
 
                 case PlayerState.Ascending:
-                    playerVerticalVelocity = -4;
+                    playerVerticalVelocity = -3;
 
-                    if (player.Position.Y <= 25)
+                    if (player.Position.Y <= 10)
                     {
                         playerState = PlayerState.Descending;
                         player.PlayAnimation("Float");
