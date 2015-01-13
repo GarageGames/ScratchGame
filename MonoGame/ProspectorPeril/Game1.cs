@@ -46,6 +46,7 @@ namespace ProspectorPeril
 
         #region Menu Variables
         Sprite tintedLayer;
+        Sprite startScreen;
         Sprite splashScreen;
         Sprite playButton;
         float splashTime = 3000;
@@ -61,8 +62,7 @@ namespace ProspectorPeril
 
         float scrollRate = 0.25f;
         float scrollY;
-
-        int lives = 3;
+        
         Sprite[] SpeedDigits = new Sprite[2];
         Sprite Arrow;
 
@@ -236,8 +236,11 @@ namespace ProspectorPeril
             playButton.Position = ViewportCenter - playTextureCenter;
 
             var tintedLayerTex = Content.Load<Texture2D>("Placeholders/TintedLayer.png");
-            tintedLayer = new Sprite(tintedLayerTex); 
-            
+            tintedLayer = new Sprite(tintedLayerTex);
+
+            var startScreenTex = Content.Load<Texture2D>("HUD/startScreen.png");
+            startScreen = new Sprite(startScreenTex);
+
             var hudTex = Content.Load<Texture2D>("HUD/HUD.png");
             hudContainer = new Sprite(hudTex);
             hudContainer.Position.Y = GraphicsViewport.Height - hudTex.Height;
@@ -443,8 +446,7 @@ namespace ProspectorPeril
                     splashScreen.Draw(spriteBatch);
                     break;
                 case GameState.Menu:
-                    background.Draw(spriteBatch);
-                    tintedLayer.Draw(spriteBatch);
+                    startScreen.Draw(spriteBatch);
                     playButton.Draw(spriteBatch);
                     break;
                 case GameState.Launch:                    

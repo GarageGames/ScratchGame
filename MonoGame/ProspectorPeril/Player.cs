@@ -12,23 +12,29 @@ namespace ProspectorPeril
             Ascending,
             Descending,
             Attacking,
+            Bounce,
             Dead
         };
 
         public PlayerState State;
-        public int Speed = 0; 
-        
-        float playerVerticalVelocity = 0.0f;
-        float speedTimer = 2000;
-        
-        int speedDecay = 1;
+        public int Speed = 0;
+        public int Lives = 3;
 
+        float playerVerticalVelocity = 0.0f;
+        float speedTimer = 2000;        
+        int speedDecay = 1;
+        
         public bool IsAscending
         {
             get
             {
                 return State == PlayerState.Ascending;
             }
+        }
+
+        public void Damage()
+        {
+            Lives--;
         }
 
         public void Die()
@@ -45,33 +51,25 @@ namespace ProspectorPeril
         public void Attack()
         {
             if (State == PlayerState.Descending)
-            {
-                State = PlayerState.Attacking;                
-            }
+                State = PlayerState.Attacking;
         }
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public Player()
-        {
-        }
+        public Player() { }
 
         /// <summary>
         /// Constructor used when a sprite only uses a single texture
         /// </summary>
         /// <param name="texture">A valid Texture2D this sprite will render</param>
-        public Player(Texture2D texture) : base(texture)
-        {            
-        }
+        public Player(Texture2D texture) : base(texture) {}
 
         /// <summary>
         /// Constructor used when a sprite uses multiple textures
         /// </summary>
         /// <param name="textures">Generic list of Texture2D objects</param>
-        public Player(List<Texture2D> textures) : base(textures)
-        {            
-        }
+        public Player(List<Texture2D> textures) : base(textures) {}
 
         public override void Update(GameTime gameTime)
         {
