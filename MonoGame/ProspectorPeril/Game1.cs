@@ -306,19 +306,7 @@ namespace ProspectorPeril
         }
 
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
-        {
-            //if (currentKeyState.IsKeyDown(Keys.W))
-            //    player.Position.Y -= 0.5f;
-            
-            //if (currentKeyState.IsKeyDown(Keys.S))
-            //    player.Position.Y += 0.5f;
-            
-            //if (currentKeyState.IsKeyDown(Keys.A))
-            //    player.Position.X -= 0.5f;
-            
-            //if (currentKeyState.IsKeyDown(Keys.D))
-            //    player.Position.X += 0.5f;
-            
+        {            
             #region Mouse Handling
             if (currentMouseState.LeftButton == ButtonState.Pressed)
                 lastMouseState = currentMouseState;
