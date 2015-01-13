@@ -1,10 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ProspectorPeril
 {
@@ -82,16 +78,25 @@ namespace ProspectorPeril
         /// </summary>
         public int Layer = 0;
 
+        /// <summary>
+        /// Width of the Sprite (texture width * X scale)
+        /// </summary>
         public float Width
         {
             get { return Textures[Frame].Width * Scale.X; }
         }
 
+        /// <summary>
+        /// Height of the Sprite (texture height * Y scale)
+        /// </summary>
         public float Height
         {
             get { return Textures[Frame].Height * Scale.Y; }
         }
 
+        /// <summary>
+        /// Width and Height of Sprite
+        /// </summary>
         public Vector2 Size
         {
             get
@@ -100,18 +105,17 @@ namespace ProspectorPeril
             }
         }
 
-        public Vector2 TextureCenter
+        /// <summary>
+        /// Center of the Sprite
+        /// </summary>
+        public Vector2 SpriteCenter
         {
             get
             {
-                return new Vector2(Width / 2f, Height / 2f);
+                return new Vector2(Width / 2f, Height / 2f) + Position;
             }
         }
-        
-        Vector2 MoveToDestination = Vector2.Zero;
-        
-        bool IsMoving = false;
-
+                
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -165,19 +169,13 @@ namespace ProspectorPeril
                 CurrentAnimFrame = 0;
             }
         }
-
-        public void MoveTo(Vector2 destination)
-        {
-            MoveToDestination = destination;
-            IsMoving = true;
-        }
-
+        
         /// <summary>
         /// Basic update routine for Sprite
         /// </summary>
         /// <param name="gameTime">Current game time</param>
-        public void Update(GameTime gameTime)
-        {
+        public virtual void Update(GameTime gameTime)
+        {            
             // If the Sprite should be animating
             if (IsAnimating)
             {
@@ -199,7 +197,7 @@ namespace ProspectorPeril
                     else
                         AnimationTimer = CurrentAnimation.TimePerFrame;
                 }
-            }
+            }            
         }
 
         /// <summary>
