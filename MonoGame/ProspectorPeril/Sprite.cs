@@ -245,7 +245,7 @@ namespace ProspectorPeril
         {
             var currentTexture = Textures[Frame];
 
-            if (currentTexture != null)
+            if (currentTexture != null && Visible)
                 spriteBatch.Draw(currentTexture, Position, null, Color.White, 0, Vector2.Zero, Scale, SpriteEffects.None, Layer);
         }
     }

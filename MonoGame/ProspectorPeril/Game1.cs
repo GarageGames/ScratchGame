@@ -78,6 +78,7 @@ namespace ProspectorPeril
         float speedTimer = 2000;
         int lives = 3;
         Sprite[] SpeedDigits = new Sprite[2];
+        Sprite Arrow;
 
         // Enemy variables
         List<Sprite> enemies = new List<Sprite>();
@@ -265,7 +266,7 @@ namespace ProspectorPeril
 
             List<Texture2D> numberTextures = new List<Texture2D>();
 
-            for (int i = 1; i < 10; i++)
+            for (int i = 0; i < 10; i++)
                 numberTextures.Add(Content.Load<Texture2D>("HUD/number_" + i + ".png"));
 
             SpeedDigits[0] = new Sprite(numberTextures);
@@ -273,7 +274,11 @@ namespace ProspectorPeril
 
             SpeedDigits[0].Frame = SpeedDigits[1].Frame = 0;
 
-            SpeedDigits[0].Position.Y = SpeedDigits[1].Position.Y = hudContainer.Position.Y;                        
+            SpeedDigits[0].Position.Y = SpeedDigits[1].Position.Y = hudContainer.Position.Y;
+            SpeedDigits[0].Position.X = 100;
+            SpeedDigits[1].Position.X = SpeedDigits[0].Position.X + 26;
+
+            Arrow = new Sprite(Content.Load<Texture2D>("HUD/arrow_01.png"));
         }
 
         public void CreateEnvironment()
@@ -317,7 +322,17 @@ namespace ProspectorPeril
         }
 
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
-        {            
+        {
+            if (currentKeyState.IsKeyDown(Keys.A))
+            {
+                SpeedDigits[0].Position.X -= 0.5f;
+            }
+
+            if (currentKeyState.IsKeyDown(Keys.D))
+            {
+                SpeedDigits[0].Position.X += 0.5f;
+            }
+         
             #region Mouse Handling
             if (currentMouseState.LeftButton == ButtonState.Pressed)
                 lastMouseState = currentMouseState;
@@ -377,6 +392,23 @@ namespace ProspectorPeril
             #endregion
         }
 
+        void UpdateSpeed()
+        {
+            if (speed <= 0)
+                speed = 0;
+
+            SpeedDigits[0].Frame = int.Parse(speed.ToString().Substring(0, 1));
+
+            if (speed > 9)
+            {
+                SpeedDigits[1].Visible = true;
+                SpeedDigits[1].Frame = int.Parse(speed.ToString().Substring(1, 1));
+            }
+            else
+                SpeedDigits[1].Visible = false;
+
+        }
+
         void UpdateScrolling(float deltaSeconds)
         {
             // Update the vertical scrolling for the background            
@@ -386,7 +418,7 @@ namespace ProspectorPeril
         void UpdatePlayer(GameTime gameTime)
         {
             player.Update(gameTime);
-
+            
             // Update the player based on his state
             switch (playerState)
             {
@@ -474,6 +506,7 @@ namespace ProspectorPeril
 
             // Get current states of mouse and keyboard
             UpdateInput(Keyboard.GetState(), Mouse.GetState());
+            UpdateSpeed();
 
             TimeSpan deltaTime = gameTime.ElapsedGameTime;
             float deltaSeconds = (float)deltaTime.Milliseconds;
@@ -534,7 +567,10 @@ namespace ProspectorPeril
                         enemy.Draw(spriteBatch);                    
 
                     hudContainer.Draw(spriteBatch);
-                    
+
+                    foreach (var digit in SpeedDigits)
+                        digit.Draw(spriteBatch);
+
                     foreach(var heart in hearts)
                         heart.Draw(spriteBatch);
                     
