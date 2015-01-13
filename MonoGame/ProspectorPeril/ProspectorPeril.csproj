@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="Barrel.cs" />
     <Compile Include="Cart.cs" />
+    <Compile Include="Enemy.cs" />
     <Compile Include="Explosion.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Launcher.cs" />

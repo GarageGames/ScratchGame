@@ -67,7 +67,7 @@ namespace ProspectorPeril
         Sprite Arrow;
 
         // Enemy variables
-        List<Sprite> enemies = new List<Sprite>();
+        List<Enemy> enemies = new List<Enemy>();
         
         #endregion
 
@@ -146,7 +146,7 @@ namespace ProspectorPeril
             launcher.AddAnimation("Launch", new int[] { 0, 1, 2, 3, 4, 5, 6 }, 100);            
         }
 
-        Sprite CreateBarrel()
+        Enemy CreateBarrel()
         {
             string[] barrelTextures = {   "enemy_barrel/enemyBarrel_01.png", 
                                           "enemy_barrel/enemyBarrel_02.png", 
@@ -175,7 +175,7 @@ namespace ProspectorPeril
             return barrel;
         }
 
-        Sprite CreateRock()
+        Enemy CreateRock()
         {
             string[] rockTextures = {   "enemy_rock/enemy_rock01.png", 
                                           "enemy_rock/enemy_rock02.png", 
@@ -196,7 +196,7 @@ namespace ProspectorPeril
             return rock;
         }
 
-        Sprite CreateCart()
+        Enemy CreateCart()
         {
             string[] cartTextures = {   "enemy_cart/enemy_cart01.png", 
                                           "enemy_cart/enemy_cart02.png", 
@@ -406,7 +406,7 @@ namespace ProspectorPeril
                 fire.Update(gameTime);
 
                 foreach (var enemy in enemies)
-                    enemy.Update(gameTime); 
+                    enemy.UpdateEnemy(gameTime); 
 
                 if (player.Speed < 10)
                     fire.IsRising = true;
@@ -457,7 +457,7 @@ namespace ProspectorPeril
                     fire.Draw(spriteBatch);
                     
                     foreach (var enemy in enemies)
-                        enemy.Draw(spriteBatch);                    
+                        enemy.DrawEnemy(spriteBatch);                    
 
                     hudContainer.Draw(spriteBatch);
 

@@ -7,7 +7,7 @@ namespace ProspectorPeril
     /// <summary>
     /// Very basic Sprite class
     /// </summary>
-    class Sprite
+    public class Sprite
     {
         class Animation
         {
@@ -119,7 +119,7 @@ namespace ProspectorPeril
         }
 
         bool Collideable = false;
-        BoundingBox CollisionBox;
+        public BoundingBox CollisionBox;
         public delegate bool CollisionDelegate(Sprite gameObject);
         public CollisionDelegate SpriteCollisionDelegate;
 

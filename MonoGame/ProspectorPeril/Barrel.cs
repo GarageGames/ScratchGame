@@ -4,8 +4,11 @@ using System.Collections.Generic;
 
 namespace ProspectorPeril
 {
-    class Barrel : Sprite
+    public class Barrel : Sprite, Enemy
     {
+        public bool HasSpawned { get; set; }
+        bool IsPrimed = false;
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -29,14 +32,35 @@ namespace ProspectorPeril
         {            
         }
 
+        public void UpdateEnemy(GameTime gameTime)
+        {
+            Update(gameTime);
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
         }
 
+        public void DrawEnemy(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+        }
+
+        public bool Collides(Sprite sprite)
+        {
+            var player = (Player)sprite;
+            bool collided = CollisionBox.Intersects(sprite.CollisionBox);
+
+            if (IsPrimed && collided)
+                player.Damage();
+
+            return collided;
+        }
+
         public void Spawn(Vector2 position)
         {
-
+            HasSpawned = true;
         }
     }
 }

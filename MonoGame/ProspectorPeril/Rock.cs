@@ -4,8 +4,10 @@ using System.Collections.Generic;
 
 namespace ProspectorPeril
 {
-    class Rock : Sprite
+    class Rock : Sprite, Enemy
     {
+        public bool HasSpawned { get; set; }
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -29,14 +31,29 @@ namespace ProspectorPeril
         {            
         }
 
+        public void UpdateEnemy(GameTime gameTime)
+        {
+            Update(gameTime);
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
         }
 
+        public void DrawEnemy(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+        }
+
         public void Spawn(Vector2 position)
         {
+            HasSpawned = true;
+        }
 
+        public bool Collides(Sprite sprite)
+        {
+            return CollisionBox.Intersects(sprite.CollisionBox);
         }
     }
 }
