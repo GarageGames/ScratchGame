@@ -117,13 +117,29 @@ namespace ProspectorPeril
                 return new Vector2(Width / 2f, Height / 2f) + Position;
             }
         }
-                
+
+        bool Collideable = false;
+        BoundingBox CollisionBox;
+        public delegate bool CollisionDelegate(Sprite gameObject);
+        public CollisionDelegate SpriteCollisionDelegate;
+
         /// <summary>
         /// Default constructor
         /// </summary>
         public Sprite()
         {
 
+        }
+
+        public void EnableCollision()
+        {
+            Collideable = true;
+
+            if (CollisionBox == null)
+            {
+                var tempPos = new Vector3(Position, 0.0f);
+                CollisionBox = new BoundingBox(tempPos, new Vector3(Position.X + Size.X, Position.Y + Size.Y, 0.0f));
+            }
         }
 
         /// <summary>
@@ -172,6 +188,41 @@ namespace ProspectorPeril
             }
         }
         
+        void UpdateAnimation(float time)
+        {
+            // Set the Sprite's texture frame to the current animation "cell"
+            Frame = CurrentAnimation.Frames[CurrentAnimFrame];
+
+            // Reduce the animation timer
+            AnimationTimer -= time;
+
+            // If the timer is less than 0, we are ready for the next frame
+            if (AnimationTimer <= 0)
+            {
+                // Increase the current animation frame by 1
+                CurrentAnimFrame++;
+                AnimationTimer = CurrentAnimation.TimePerFrame;
+
+                // If the current animation frame is more than the number of frames in the animation, stop animating
+                if (CurrentAnimFrame >= CurrentAnimation.Frames.Length)
+                {
+                    if (CurrentAnimation.Looping)
+                        CurrentAnimFrame = 0;
+                    else
+                        IsAnimating = false;
+                }
+            }
+        }
+
+        public void UpdateCollision()
+        {
+            // Update bounding struct positions
+            CollisionBox.Min.X = Position.X;
+            CollisionBox.Min.Y = Position.Y;
+            CollisionBox.Max.X = Position.X + Size.X;
+            CollisionBox.Max.Y = Position.Y + Size.Y;
+        }
+
         /// <summary>
         /// Basic update routine for Sprite
         /// </summary>
@@ -180,30 +231,10 @@ namespace ProspectorPeril
         {            
             // If the Sprite should be animating
             if (IsAnimating)
-            {
-                // Set the Sprite's texture frame to the current animation "cell"
-                Frame = CurrentAnimation.Frames[CurrentAnimFrame];
+                UpdateAnimation(gameTime.ElapsedGameTime.Milliseconds);                            
 
-                // Reduce the animation timer
-                AnimationTimer -= gameTime.ElapsedGameTime.Milliseconds;
-
-                // If the timer is less than 0, we are ready for the next frame
-                if (AnimationTimer <= 0)
-                {
-                    // Increase the current animation frame by 1
-                    CurrentAnimFrame++;
-                    AnimationTimer = CurrentAnimation.TimePerFrame;
-
-                    // If the current animation frame is more than the number of frames in the animation, stop animating
-                    if (CurrentAnimFrame >= CurrentAnimation.Frames.Length)
-                    {
-                        if (CurrentAnimation.Looping)
-                            CurrentAnimFrame = 0;
-                        else
-                            IsAnimating = false;
-                    }                    
-                }
-            }            
+            if (Collideable)
+                UpdateCollision();            
         }
 
         /// <summary>
