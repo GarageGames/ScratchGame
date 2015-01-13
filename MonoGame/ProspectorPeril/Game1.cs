@@ -264,10 +264,20 @@ namespace ProspectorPeril
         public void CreateEnvironment()
         {
             var backgroundTex = Content.Load<Texture2D>("BG/Background.png");
-            background = new Sprite(backgroundTex); 
+            background = new Sprite(backgroundTex);
+
+            List<Texture2D> fireTextures = new List<Texture2D>();
+
+            for(int i = 1; i < 13; i++)
+            {
+                var textString = "wallOfFire/wallOfFire_" + i + ".png";
+                var fireTex = Content.Load<Texture2D>(textString);
+                fireTextures.Add(fireTex);
+            }
             
-            var fireTex = Content.Load<Texture2D>("Placeholders/Ground.png");
-            fire = new Sprite(fireTex);
+            fire = new Sprite(fireTextures);
+            fire.AddAnimation("Idle", new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, 100, true);
+
             fire.Position.Y = hudContainer.Position.Y;
         }
 

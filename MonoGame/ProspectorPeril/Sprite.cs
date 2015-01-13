@@ -14,12 +14,14 @@ namespace ProspectorPeril
             public string Name;
             public int[] Frames;
             public float TimePerFrame;
+            public bool Looping;
 
-            public Animation(string name, int[] frames, float timePerFrame)
+            public Animation(string name, int[] frames, float timePerFrame, bool looping)
             {
                 Name = name;
                 Frames = frames;
                 TimePerFrame = timePerFrame;
+                Looping = looping;
             }
         }
 
@@ -149,9 +151,9 @@ namespace ProspectorPeril
         /// <param name="name">ID of the animation</param>
         /// <param name="frames">An array of texture frame indexes</param>
         /// <param name="time">Time between each frame (milliseconds)</param>
-        public void AddAnimation(string name, int[] frames, float time)
+        public void AddAnimation(string name, int[] frames, float time, bool looping = false)
         {
-            Animations.Add(name, new Animation(name, frames, time));
+            Animations.Add(name, new Animation(name, frames, time, looping));
         }
 
         /// <summary>
@@ -190,12 +192,16 @@ namespace ProspectorPeril
                 {
                     // Increase the current animation frame by 1
                     CurrentAnimFrame++;
+                    AnimationTimer = CurrentAnimation.TimePerFrame;
 
                     // If the current animation frame is more than the number of frames in the animation, stop animating
                     if (CurrentAnimFrame >= CurrentAnimation.Frames.Length)
-                        IsAnimating = false;
-                    else
-                        AnimationTimer = CurrentAnimation.TimePerFrame;
+                    {
+                        if (CurrentAnimation.Looping)
+                            CurrentAnimFrame = 0;
+                        else
+                            IsAnimating = false;
+                    }                    
                 }
             }            
         }
