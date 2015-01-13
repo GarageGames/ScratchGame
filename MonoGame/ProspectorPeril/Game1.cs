@@ -77,6 +77,7 @@ namespace ProspectorPeril
         int speedDecay = 1;
         float speedTimer = 2000;
         int lives = 3;
+        Sprite[] SpeedDigits = new Sprite[2];
 
         // Enemy variables
         List<Sprite> enemies = new List<Sprite>();
@@ -259,8 +260,20 @@ namespace ProspectorPeril
                 var texture = Content.Load<Texture2D>("HUD/heart.png");
                 hearts[i] = new Sprite(texture);
                 hearts[i].Position.Y = hudContainer.Position.Y;
-                hearts[i].Position.X = GraphicsViewport.Bounds.Right;
+                hearts[i].Position.X = GraphicsViewport.Bounds.Right - texture.Width * (i + 1);
             }
+
+            List<Texture2D> numberTextures = new List<Texture2D>();
+
+            for (int i = 1; i < 10; i++)
+                numberTextures.Add(Content.Load<Texture2D>("HUD/number_" + i + ".png"));
+
+            SpeedDigits[0] = new Sprite(numberTextures);
+            SpeedDigits[1] = new Sprite(numberTextures);
+
+            SpeedDigits[0].Frame = SpeedDigits[1].Frame = 0;
+
+            SpeedDigits[0].Position.Y = SpeedDigits[1].Position.Y = hudContainer.Position.Y;                        
         }
 
         public void CreateEnvironment()
@@ -271,16 +284,12 @@ namespace ProspectorPeril
             List<Texture2D> fireTextures = new List<Texture2D>();
 
             for(int i = 1; i < 13; i++)
-            {
-                var textString = "wallOfFire/wallOfFire_" + i + ".png";
-                var fireTex = Content.Load<Texture2D>(textString);
-                fireTextures.Add(fireTex);
-            }
-            
+                fireTextures.Add(Content.Load<Texture2D>("wallOfFire/wallOfFire_" + i + ".png"));
+                        
             fire = new Sprite(fireTextures);
             fire.AddAnimation("Idle", new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, 100, true);
-
             fire.Position.Y = hudContainer.Position.Y;
+            fire.PlayAnimation("Idle");
         }
 
         /// <summary>
@@ -376,6 +385,8 @@ namespace ProspectorPeril
 
         void UpdatePlayer(GameTime gameTime)
         {
+            player.Update(gameTime);
+
             // Update the player based on his state
             switch (playerState)
             {
@@ -431,8 +442,12 @@ namespace ProspectorPeril
             }            
         }
 
-        void UpdateFire(float deltaSeconds)
+        void UpdateFire(GameTime gameTime)
         {
+            fire.Update(gameTime);
+            TimeSpan deltaTime = gameTime.ElapsedGameTime;
+            float deltaSeconds = (float)deltaTime.Milliseconds;
+
             if (speed < 10)
             {
                 fire.Position.Y -= deltaSeconds * 0.15f;
@@ -466,11 +481,16 @@ namespace ProspectorPeril
             // If the game is running, update the main systems
             if (gameState == GameState.Running)
             {
+                launcher.Update(gameTime);
+
                 UpdateScrolling(deltaSeconds);
 
                 UpdatePlayer(gameTime);
 
-                UpdateFire(deltaSeconds);
+                UpdateFire(gameTime);
+
+                foreach (var enemy in enemies)
+                    enemy.Update(gameTime);                
 
                 CheckForLoss();
             }
@@ -478,6 +498,10 @@ namespace ProspectorPeril
             base.Update(gameTime);
         }
 
+        void DrawUI()
+        {
+
+        }
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -499,28 +523,15 @@ namespace ProspectorPeril
                     tintedLayer.Draw(spriteBatch);
                     playButton.Draw(spriteBatch);
                     break;
-                case GameState.Launch:
-                    background.Draw(spriteBatch);
-                    launcher.Draw(spriteBatch);
-                    player.Draw(spriteBatch);
-                    hudContainer.Draw(spriteBatch);
-                    break;
+                case GameState.Launch:                    
                 case GameState.Running:
-                    spriteBatch.Draw(background.Textures[0], background.Position, new Rectangle(0, (int)-scrollY, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height), Color.White);
-                    launcher.Update(gameTime);
+                    spriteBatch.Draw(background.Textures[0], background.Position, new Rectangle(0, (int)-scrollY, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height), Color.White);                    
                     launcher.Draw(spriteBatch);
-
-                    player.Update(gameTime);
-                    player.Draw(spriteBatch);
-
-                    fire.Update(gameTime);
+                    player.Draw(spriteBatch);                    
                     fire.Draw(spriteBatch);
                     
                     foreach (var enemy in enemies)
-                    {
-                        enemy.Update(gameTime);
-                        enemy.Draw(spriteBatch);
-                    }
+                        enemy.Draw(spriteBatch);                    
 
                     hudContainer.Draw(spriteBatch);
                     
