@@ -258,6 +258,8 @@ namespace ProspectorPeril
             {
                 var texture = Content.Load<Texture2D>("HUD/heart.png");
                 hearts[i] = new Sprite(texture);
+                hearts[i].Position.Y = hudContainer.Position.Y;
+                hearts[i].Position.X = GraphicsViewport.Bounds.Right;
             }
         }
 
@@ -513,7 +515,7 @@ namespace ProspectorPeril
 
                     fire.Update(gameTime);
                     fire.Draw(spriteBatch);
-
+                    
                     foreach (var enemy in enemies)
                     {
                         enemy.Update(gameTime);
@@ -521,6 +523,10 @@ namespace ProspectorPeril
                     }
 
                     hudContainer.Draw(spriteBatch);
+                    
+                    foreach(var heart in hearts)
+                        heart.Draw(spriteBatch);
+                    
                     break;
                 case GameState.GameOver:
                     Console.WriteLine("Game is over, do nothing");
