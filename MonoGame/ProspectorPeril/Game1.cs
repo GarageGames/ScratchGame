@@ -23,15 +23,6 @@ namespace ProspectorPeril
     /// </summary>
     public class Game1 : Game
     {
-        enum PlayerState
-        {
-            Idle,
-            Ascending,
-            Descending,
-            Attacking,
-            Dead
-        };
-
         enum GameState
         {
             Splash,
@@ -50,9 +41,7 @@ namespace ProspectorPeril
         #endregion
 
         #region Player variables
-        Player player;
-        PlayerState playerState;        
-        float playerVerticalVelocity = 0.0f;
+        Player player;        
         #endregion
 
         #region Menu Variables
@@ -65,17 +54,14 @@ namespace ProspectorPeril
         #region Game variables
         GameState gameState; 
         Sprite background;
-        Sprite launcher;
-        Sprite fire;
+        Launcher launcher;
+        Explosion fire;
         Sprite hudContainer;
         Sprite[] hearts = new Sprite[3];
 
         float scrollRate = 0.25f;
         float scrollY;
 
-        int speed = 0;
-        int speedDecay = 1;
-        float speedTimer = 2000;
         int lives = 3;
         Sprite[] SpeedDigits = new Sprite[2];
         Sprite Arrow;
@@ -153,7 +139,7 @@ namespace ProspectorPeril
             foreach (var textureString in launcherTextures)
                 textures.Add(Content.Load<Texture2D>(textureString));
 
-            launcher = new Sprite(textures);
+            launcher = new Launcher(textures);
             launcher.Scale = new Vector2(0.75f, 0.75f);
             launcher.Position = new Vector2(36.5f, 106.5f);
             launcher.AddAnimation("Idle", new int[] { 0}, 0);
@@ -290,8 +276,8 @@ namespace ProspectorPeril
 
             for(int i = 1; i < 13; i++)
                 fireTextures.Add(Content.Load<Texture2D>("wallOfFire/wallOfFire_" + i + ".png"));
-                        
-            fire = new Sprite(fireTextures);
+
+            fire = new Explosion(fireTextures);
             fire.AddAnimation("Idle", new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, 100, true);
             fire.Position.Y = hudContainer.Position.Y;
             fire.PlayAnimation("Idle");
@@ -312,27 +298,9 @@ namespace ProspectorPeril
             CreateLauncher();
             //CreateEnemies();            
         }
-
-        void UpdateSplash(GameTime gameTime)
-        {
-            splashTime -= gameTime.ElapsedGameTime.Milliseconds;
-
-            if (splashTime <= 0)
-                gameState++;
-        }
-
+        
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
-        {
-            if (currentKeyState.IsKeyDown(Keys.A))
-            {
-                SpeedDigits[0].Position.X -= 0.5f;
-            }
-
-            if (currentKeyState.IsKeyDown(Keys.D))
-            {
-                SpeedDigits[0].Position.X += 0.5f;
-            }
-         
+        {            
             #region Mouse Handling
             if (currentMouseState.LeftButton == ButtonState.Pressed)
                 lastMouseState = currentMouseState;
@@ -345,8 +313,11 @@ namespace ProspectorPeril
                 {
                     case GameState.Splash:                        
                         gameState++;
+                        splashScreen.Visible = false;
                         break;
-                    case GameState.Menu:                        
+                    case GameState.Menu:
+                        tintedLayer.Visible = false;
+                        playButton.Visible = false;
                         gameState++;
                         break;
                     default:
@@ -367,9 +338,8 @@ namespace ProspectorPeril
                 launcher.PlayAnimation("Launch");
                 player.PlayAnimation("Launch");
                 
-                playerState = PlayerState.Ascending;
-                speed = 45;
-                //launcher.Position.Y = GraphicsViewport.Height;
+                player.Ascend();
+                player.Speed = 25;
                 gameState++;
             }
 
@@ -387,112 +357,10 @@ namespace ProspectorPeril
 
             // Player attack!
             if (currentKeyState.IsKeyDown(Keys.Down))
-                playerState = PlayerState.Attacking;
+                player.Attack();
 
             #endregion
-        }
-
-        void UpdateSpeed()
-        {
-            if (speed <= 0)
-                speed = 0;
-
-            SpeedDigits[0].Frame = int.Parse(speed.ToString().Substring(0, 1));
-
-            if (speed > 9)
-            {
-                SpeedDigits[1].Visible = true;
-                SpeedDigits[1].Frame = int.Parse(speed.ToString().Substring(1, 1));
-            }
-            else
-                SpeedDigits[1].Visible = false;
-
-        }
-
-        void UpdateScrolling(float deltaSeconds)
-        {
-            // Update the vertical scrolling for the background            
-            scrollY += scrollRate * deltaSeconds;
-        }
-
-        void UpdatePlayer(GameTime gameTime)
-        {
-            player.Update(gameTime);
-            
-            // Update the player based on his state
-            switch (playerState)
-            {
-                case PlayerState.Idle:                    
-                    break;
-
-                case PlayerState.Ascending:
-                    playerVerticalVelocity = -3;
-
-                    if (player.Position.Y <= 10)
-                    {
-                        playerState = PlayerState.Descending;
-                        player.PlayAnimation("Float");
-                    }
-
-                    break;
-
-                case PlayerState.Descending:
-                    playerVerticalVelocity = 2;
-                    speedTimer -= gameTime.ElapsedGameTime.Milliseconds;
-
-                    if (speedTimer <= 0)
-                    {
-                        speedTimer = 2000;
-                        speed -= speedDecay;
-                    }
-
-                    break;
-
-                case PlayerState.Attacking:
-                    playerVerticalVelocity = 9;
-                    break;
-
-                case PlayerState.Dead:
-                    break;
-            }
-
-            player.Position.Y += playerVerticalVelocity;
-        }
-
-        void CheckForLoss()
-        {
-            if (player.Position.Y >= fire.Position.Y && fire.Visible)
-            {
-                playerState = PlayerState.Dead;
-                gameState = GameState.GameOver;
-            }
-
-            if (player.Position.Y >= 424 && playerState != PlayerState.Ascending)
-            {
-                speed -= 10;
-                playerState = PlayerState.Ascending;                
-            }            
-        }
-
-        void UpdateFire(GameTime gameTime)
-        {
-            fire.Update(gameTime);
-            TimeSpan deltaTime = gameTime.ElapsedGameTime;
-            float deltaSeconds = (float)deltaTime.Milliseconds;
-
-            if (speed < 10)
-            {
-                fire.Position.Y -= deltaSeconds * 0.15f;
-                fire.Visible = true;
-            }
-            else
-            {                
-                if (fire.Position.Y < hudContainer.Position.Y)
-                    fire.Position.Y += deltaSeconds * 0.15f;
-                else
-                    fire.Visible = false;
-            }
-        }
+        }        
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
@@ -502,11 +370,15 @@ namespace ProspectorPeril
         protected override void Update(GameTime gameTime)
         {
             if (gameState == GameState.Splash)
-                UpdateSplash(gameTime);
+            {
+                splashTime -= gameTime.ElapsedGameTime.Milliseconds;
+
+                if (splashTime <= 0)
+                    gameState++;
+            }
 
             // Get current states of mouse and keyboard
-            UpdateInput(Keyboard.GetState(), Mouse.GetState());
-            UpdateSpeed();
+            UpdateInput(Keyboard.GetState(), Mouse.GetState());            
 
             TimeSpan deltaTime = gameTime.ElapsedGameTime;
             float deltaSeconds = (float)deltaTime.Milliseconds;
@@ -514,27 +386,46 @@ namespace ProspectorPeril
             // If the game is running, update the main systems
             if (gameState == GameState.Running)
             {
+                if (player.Position.Y >= fire.Position.Y && fire.Position.Y <= 122 && fire.Visible)
+                {
+                    player.Die();
+                    gameState = GameState.GameOver;
+                }
+
+                if (player.Position.Y >= 424 && !player.IsAscending)
+                {
+                    player.Speed -= 10;
+                    player.Ascend();
+                }
+
                 launcher.Update(gameTime);
-
-                UpdateScrolling(deltaSeconds);
-
-                UpdatePlayer(gameTime);
-
-                UpdateFire(gameTime);
+                player.Update(gameTime);
+                fire.Update(gameTime);
 
                 foreach (var enemy in enemies)
-                    enemy.Update(gameTime);                
+                    enemy.Update(gameTime); 
 
-                CheckForLoss();
+                if (player.Speed < 10)
+                    fire.IsRising = true;
+                else
+                    fire.IsRising = false;
+
+                scrollY += scrollRate * deltaSeconds;
+
+                SpeedDigits[0].Frame = int.Parse(player.Speed.ToString().Substring(0, 1));
+
+                if (player.Speed > 9)
+                {
+                    SpeedDigits[1].Visible = true;
+                    SpeedDigits[1].Frame = int.Parse(player.Speed.ToString().Substring(1, 1));
+                }
+                else
+                    SpeedDigits[1].Visible = false;               
             }
             
             base.Update(gameTime);
         }
 
-        void DrawUI()
-        {
-
-        }
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
