@@ -33,5 +33,10 @@ namespace ProspectorPeril
         {
             base.Update(gameTime);
         }
+
+        public void Spawn(Vector2 position)
+        {
+
+        }
     }
 }
