@@ -124,10 +124,8 @@ namespace ProspectorPeril
             get;
             set;
         }
-        public BoundingBox CollisionBox;
-        public delegate bool CollisionDelegate(Sprite gameObject);
-        public CollisionDelegate SpriteCollisionDelegate;
-
+        public BoundingSphere CollisionSphere;
+        
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -140,10 +138,10 @@ namespace ProspectorPeril
         {
             Collideable = shouldEnable;
 
-            if (CollisionBox == null)
+            if (CollisionSphere == null)
             {
                 var tempPos = new Vector3(Position, 0.0f);
-                CollisionBox = new BoundingBox(tempPos, new Vector3(Position.X + Size.X, Position.Y + Size.Y, 0.0f));
+                CollisionSphere = new BoundingSphere(tempPos, Size.X);
             }
         }
 
@@ -229,10 +227,8 @@ namespace ProspectorPeril
         public void UpdateCollision()
         {
             // Update bounding struct positions
-            CollisionBox.Min.X = Position.X;
-            CollisionBox.Min.Y = Position.Y;
-            CollisionBox.Max.X = Position.X + Size.X;
-            CollisionBox.Max.Y = Position.Y + Size.Y;
+            CollisionSphere.Center.X = Position.X;
+            CollisionSphere.Center.Y = Position.Y;            
         }
 
         /// <summary>

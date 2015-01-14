@@ -82,7 +82,7 @@ namespace ProspectorPeril
 
         public bool Collides(Sprite sprite)
         {
-            var result = CollisionBox.Intersects(sprite.CollisionBox);
+            var result = CollisionSphere.Intersects(sprite.CollisionSphere);
 
             if (result)
             {                

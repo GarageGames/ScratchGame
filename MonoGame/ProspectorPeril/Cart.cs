@@ -55,7 +55,7 @@ namespace ProspectorPeril
 
         public bool Collides(Sprite sprite)
         {
-            return CollisionBox.Intersects(sprite.CollisionBox);
+            return CollisionSphere.Intersects(sprite.CollisionSphere);
         }
     }
 }

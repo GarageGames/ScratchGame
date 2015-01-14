@@ -59,7 +59,7 @@ namespace ProspectorPeril
         public bool Collides(Sprite sprite)
         {
             var player = (Player)sprite;
-            bool collided = CollisionBox.Intersects(sprite.CollisionBox);
+            bool collided = CollisionSphere.Intersects(sprite.CollisionSphere);
 
             if (IsPrimed && collided)
                 player.Damage();
