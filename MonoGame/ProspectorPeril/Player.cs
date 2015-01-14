@@ -50,8 +50,15 @@ namespace ProspectorPeril
 
         public void Attack()
         {
-            if (State == PlayerState.Descending)
+            if (State == PlayerState.Descending || State == PlayerState.Bounce)
                 State = PlayerState.Attacking;
+        }
+
+        public void Bounce()
+        {
+            Speed++;
+            PlayAnimation("Attack");
+            State = PlayerState.Bounce;
         }
 
         /// <summary>
@@ -105,6 +112,16 @@ namespace ProspectorPeril
 
                     break;
 
+                case PlayerState.Bounce:
+                    playerVerticalVelocity = -3;
+
+                    if (Position.Y <= 10)
+                    {
+                        State = PlayerState.Descending;
+                        PlayAnimation("Float");
+                    }
+
+                    break;
                 case PlayerState.Attacking:
                     playerVerticalVelocity = 9;
                     break;

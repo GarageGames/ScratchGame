@@ -45,7 +45,7 @@ namespace ProspectorPeril
         #endregion
 
         #region Menu Variables
-        Sprite tintedLayer;
+        Sprite endScreen;
         Sprite startScreen;
         Sprite splashScreen;
         Sprite playButton;
@@ -53,7 +53,7 @@ namespace ProspectorPeril
         #endregion
 
         #region Game variables
-        GameState gameState; 
+        GameState gameState;
         Sprite background;
         Launcher launcher;
         Explosion fire;
@@ -68,7 +68,7 @@ namespace ProspectorPeril
 
         // Enemy variables
         List<Enemy> enemies = new List<Enemy>();
-        
+        float spawnTimer = 1000;
         #endregion
 
         public Game1()
@@ -113,10 +113,11 @@ namespace ProspectorPeril
                 textures.Add(Content.Load<Texture2D>(textureString));
 
             player = new Player(textures);
+            player.EnableCollision();
             player.AddAnimation("Idle", new int[] {0}, 0);
             player.AddAnimation("Launch", new int[] { 1, 2 }, 100);
             player.AddAnimation("Float", new int[] {3}, 0);
-            player.AddAnimation("Attack", new int[] { 4, 5 }, 100);
+            player.AddAnimation("Attack", new int[] { 4, 5 , 3}, 100);
 
             player.Scale = new Vector2(0.6f, 0.6f);
             player.Position.X = ViewportCenter.X - player.SpriteCenter.X;
@@ -220,8 +221,8 @@ namespace ProspectorPeril
         void CreateEnemies()
         {
             enemies.Add(CreateRock());
-            enemies.Add(CreateBarrel());
-            enemies.Add(CreateCart());
+            //enemies.Add(CreateBarrel());
+            //enemies.Add(CreateCart());
         }
 
         void CreateInterface()
@@ -235,8 +236,9 @@ namespace ProspectorPeril
             var playTextureCenter = new Vector2(playButtonTex.Width / 2f, playButtonTex.Height / 2f);
             playButton.Position = ViewportCenter - playTextureCenter;
 
-            var tintedLayerTex = Content.Load<Texture2D>("Placeholders/TintedLayer.png");
-            tintedLayer = new Sprite(tintedLayerTex);
+            var endScreenTex = Content.Load<Texture2D>("HUD/endScreenOverlay.png");
+            endScreen = new Sprite(endScreenTex);
+            endScreen.Visible = false;
 
             var startScreenTex = Content.Load<Texture2D>("HUD/startScreen.png");
             startScreen = new Sprite(startScreenTex);
@@ -250,7 +252,7 @@ namespace ProspectorPeril
                 var texture = Content.Load<Texture2D>("HUD/heart.png");
                 hearts[i] = new Sprite(texture);
                 hearts[i].Position.Y = hudContainer.Position.Y;
-                hearts[i].Position.X = GraphicsViewport.Bounds.Right - texture.Width * (i + 1);
+                hearts[i].Position.X = GraphicsViewport.Bounds.Right / 1.5f - texture.Width * (i + 1);
             }
 
             List<Texture2D> numberTextures = new List<Texture2D>();
@@ -299,7 +301,7 @@ namespace ProspectorPeril
             CreateEnvironment();
             CreatePlayer();
             CreateLauncher();
-            //CreateEnemies();            
+            CreateEnemies();            
         }
         
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
@@ -318,8 +320,7 @@ namespace ProspectorPeril
                         gameState++;
                         splashScreen.Visible = false;
                         break;
-                    case GameState.Menu:
-                        tintedLayer.Visible = false;
+                    case GameState.Menu:                        
                         playButton.Visible = false;
                         gameState++;
                         break;
@@ -389,10 +390,26 @@ namespace ProspectorPeril
             // If the game is running, update the main systems
             if (gameState == GameState.Running)
             {
+                if (spawnTimer <= 0)
+                {
+                    spawnTimer = 1000;
+
+                    foreach(var enemy in enemies)
+                    {
+                        if (!enemy.HasSpawned)
+                            enemy.Spawn(new Vector2(0, 50));
+                    }
+                }
+                else
+                {
+                    spawnTimer -= gameTime.ElapsedGameTime.Milliseconds;
+                }
+
                 if (player.Position.Y >= fire.Position.Y && fire.Position.Y <= 122 && fire.Visible)
                 {
                     player.Die();
                     gameState = GameState.GameOver;
+                    endScreen.Visible = true;
                 }
 
                 if (player.Position.Y >= 424 && !player.IsAscending)
@@ -406,7 +423,16 @@ namespace ProspectorPeril
                 fire.Update(gameTime);
 
                 foreach (var enemy in enemies)
-                    enemy.UpdateEnemy(gameTime); 
+                {
+                    enemy.UpdateEnemy(gameTime);
+                    if (enemy.HasSpawned && enemy.Collideable)
+                    {
+                        var result = enemy.Collides(player);
+
+                        if (result)
+                            player.Bounce();
+                    }
+                }
 
                 if (player.Speed < 10)
                     fire.IsRising = true;
@@ -443,13 +469,14 @@ namespace ProspectorPeril
             switch(gameState)
             {
                 case GameState.Splash:
-                    splashScreen.Draw(spriteBatch);
+                    splashScreen.Draw(spriteBatch);                    
                     break;
                 case GameState.Menu:
                     startScreen.Draw(spriteBatch);
                     playButton.Draw(spriteBatch);
                     break;
-                case GameState.Launch:                    
+                case GameState.Launch:
+                case GameState.GameOver:
                 case GameState.Running:
                     spriteBatch.Draw(background.Textures[0], background.Position, new Rectangle(0, (int)-scrollY, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height), Color.White);                    
                     launcher.Draw(spriteBatch);
@@ -466,11 +493,9 @@ namespace ProspectorPeril
 
                     foreach(var heart in hearts)
                         heart.Draw(spriteBatch);
-                    
-                    break;
-                case GameState.GameOver:
-                    Console.WriteLine("Game is over, do nothing");
-                    break;
+
+                    endScreen.Draw(spriteBatch);
+                    break;                
             }
                         
             // End drawing

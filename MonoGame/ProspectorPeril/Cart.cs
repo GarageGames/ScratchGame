@@ -8,6 +8,8 @@ namespace ProspectorPeril
     {
         public bool HasSpawned { get; set; }
 
+        public Vector2 Velocity { get; set; }
+
         /// <summary>
         /// Default constructor
         /// </summary>

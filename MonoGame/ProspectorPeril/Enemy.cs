@@ -9,7 +9,11 @@ namespace ProspectorPeril
 {    
     public interface Enemy
     {
+        bool Collideable { get; }
+
         bool HasSpawned { get; set; }
+
+        Vector2 Velocity { get; set; }
 
         void Spawn(Vector2 spawnPosition);
 

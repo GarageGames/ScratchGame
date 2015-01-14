@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace ProspectorPeril
@@ -118,7 +119,11 @@ namespace ProspectorPeril
             }
         }
 
-        bool Collideable = false;
+        public bool Collideable
+        {
+            get;
+            set;
+        }
         public BoundingBox CollisionBox;
         public delegate bool CollisionDelegate(Sprite gameObject);
         public CollisionDelegate SpriteCollisionDelegate;
@@ -131,9 +136,9 @@ namespace ProspectorPeril
 
         }
 
-        public void EnableCollision()
+        public void EnableCollision(bool shouldEnable = true)
         {
-            Collideable = true;
+            Collideable = shouldEnable;
 
             if (CollisionBox == null)
             {
@@ -207,12 +212,19 @@ namespace ProspectorPeril
                 if (CurrentAnimFrame >= CurrentAnimation.Frames.Length)
                 {
                     if (CurrentAnimation.Looping)
+                    {
                         CurrentAnimFrame = 0;
+                    }
                     else
+                    {
+                        OnAnimationEnd();
                         IsAnimating = false;
+                    }
                 }
             }
         }
+
+        virtual public void OnAnimationEnd() { }
 
         public void UpdateCollision()
         {

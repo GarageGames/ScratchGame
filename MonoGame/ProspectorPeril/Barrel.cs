@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace ProspectorPeril
@@ -7,6 +8,9 @@ namespace ProspectorPeril
     public class Barrel : Sprite, Enemy
     {
         public bool HasSpawned { get; set; }
+
+        public Vector2 Velocity { get; set; }
+
         bool IsPrimed = false;
 
         /// <summary>
@@ -39,6 +43,11 @@ namespace ProspectorPeril
 
         public override void Update(GameTime gameTime)
         {
+            if (HasSpawned)
+            {
+
+            }
+
             base.Update(gameTime);
         }
 
@@ -61,6 +70,7 @@ namespace ProspectorPeril
         public void Spawn(Vector2 position)
         {
             HasSpawned = true;
+            Visible = true;
         }
     }
 }
