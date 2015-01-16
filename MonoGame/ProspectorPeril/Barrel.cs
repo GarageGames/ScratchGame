@@ -5,19 +5,16 @@ using System.Collections.Generic;
 
 namespace ProspectorPeril
 {
-    public class Barrel : Sprite, Enemy
+    public class Barrel : Enemy
     {
-        public bool HasSpawned { get; set; }
-
-        public Vector2 Velocity { get; set; }
-
         bool IsPrimed = false;
+        float PrimeTimer = 2000;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public Barrel()
-        {
+        public Barrel() : base()
+        {            
         }
 
         /// <summary>
@@ -32,31 +29,49 @@ namespace ProspectorPeril
         /// Constructor used when a sprite uses multiple textures
         /// </summary>
         /// <param name="textures">Generic list of Texture2D objects</param>
-        public Barrel(List<Texture2D> textures) : base(textures)
+        public Barrel(List<Texture2D> textures)
+            : base(textures)
         {            
-        }
-
-        public void UpdateEnemy(GameTime gameTime)
-        {
-            Update(gameTime);
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (HasSpawned)
-            {
+            // Prime stuff
 
-            }
-
+            // Base stuff
             base.Update(gameTime);
         }
 
-        public void DrawEnemy(SpriteBatch spriteBatch)
-        {
-            base.Draw(spriteBatch);
-        }
+        //public override void Spawn(Vector2 position, Vector2 velocity)
+        //{
+        //    base.Spawn(position, velocity);
+        //}
+        
+        //public bool Collides(Sprite sprite)
+        //{
+        //    if (!sprite.Collideable)
+        //        return false;
 
-        public bool Collides(Sprite sprite)
+        //    var result = CollisionSphere.Intersects(sprite.CollisionSphere);
+
+        //    if (result)
+        //    {                
+        //        EnableCollision(false);
+        //        PlayAnimation("Break");
+        //        Velocity = Vector2.Zero;
+        //    }
+
+        //    return result;
+        //}
+
+        //public override void OnAnimationEnd()
+        //{
+        //    Position = new Vector2(500, 500);
+        //    Visible = false;
+        //    HasSpawned = false;
+        //}
+        
+        public override bool Collides(Sprite sprite)
         {
             var player = (Player)sprite;
             bool collided = CollisionSphere.Intersects(sprite.CollisionSphere);
@@ -67,10 +82,10 @@ namespace ProspectorPeril
             return collided;
         }
 
-        public void Spawn(Vector2 position)
+        public void Spawn(Random rand)
         {
-            HasSpawned = true;
-            Visible = true;
+            IsPrimed = true;
+            PrimeTimer = 2000;
         }
     }
 }

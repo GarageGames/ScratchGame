@@ -1,20 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace ProspectorPeril
 {
-    class Cart : Sprite, Enemy
+    class Cart : Enemy
     {
-        public bool HasSpawned { get; set; }
-
-        public Vector2 Velocity { get; set; }
-
         /// <summary>
         /// Default constructor
         /// </summary>
-        public Cart()
-        {
+        public Cart() : base()
+        {            
         }
 
         /// <summary>
@@ -29,33 +26,43 @@ namespace ProspectorPeril
         /// Constructor used when a sprite uses multiple textures
         /// </summary>
         /// <param name="textures">Generic list of Texture2D objects</param>
-        public Cart(List<Texture2D> textures) : base(textures)
+        public Cart(List<Texture2D> textures)
+            : base(textures)
         {            
         }
 
-        public void UpdateEnemy(GameTime gameTime)
-        {
-            Update(gameTime);
-        }
+        //public override void Update(GameTime gameTime)
+        //{            
+        //    base.Update(gameTime);
+        //}
 
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
-        }
+        //public override void Spawn(Vector2 position, Vector2 velocity)
+        //{
+        //    base.Spawn(position, velocity);
+        //}
+        
+        //public bool Collides(Sprite sprite)
+        //{
+        //    if (!sprite.Collideable)
+        //        return false;
 
-        public void DrawEnemy(SpriteBatch spriteBatch)
-        {
-            base.Draw(spriteBatch);
-        }
+        //    var result = CollisionSphere.Intersects(sprite.CollisionSphere);
 
-        public void Spawn(Vector2 position)
-        {
-            HasSpawned = true;
-        }
+        //    if (result)
+        //    {                
+        //        EnableCollision(false);
+        //        PlayAnimation("Break");
+        //        Velocity = Vector2.Zero;
+        //    }
 
-        public bool Collides(Sprite sprite)
-        {
-            return CollisionSphere.Intersects(sprite.CollisionSphere);
-        }
+        //    return result;
+        //}
+
+        //public override void OnAnimationEnd()
+        //{
+        //    Position = new Vector2(500, 500);
+        //    Visible = false;
+        //    HasSpawned = false;
+        //}
     }
 }

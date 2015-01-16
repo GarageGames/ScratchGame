@@ -38,6 +38,7 @@ namespace ProspectorPeril
         Viewport GraphicsViewport;
         Vector2 ViewportCenter;
         MouseState lastMouseState;
+        Random random = new Random();
         #endregion
 
         #region Player variables
@@ -69,6 +70,7 @@ namespace ProspectorPeril
         // Enemy variables
         List<Enemy> enemies = new List<Enemy>();
         float spawnTimer = 1000;
+        int enemyIndex = 0;
         #endregion
 
         public Game1()
@@ -112,8 +114,8 @@ namespace ProspectorPeril
             foreach(var textureString in playerTextures)
                 textures.Add(Content.Load<Texture2D>(textureString));
 
-            player = new Player(textures);
-            player.EnableCollision();
+            player = new Player(textures);            
+
             player.AddAnimation("Idle", new int[] {0}, 0);
             player.AddAnimation("Launch", new int[] { 1, 2 }, 100);
             player.AddAnimation("Float", new int[] {3}, 0);
@@ -122,6 +124,8 @@ namespace ProspectorPeril
             player.Scale = new Vector2(0.6f, 0.6f);
             player.Position.X = ViewportCenter.X - player.SpriteCenter.X;
             player.Position.Y = 116;
+            
+            player.EnableCollision();
         }
 
         void CreateLauncher()
@@ -221,6 +225,8 @@ namespace ProspectorPeril
         void CreateEnemies()
         {
             enemies.Add(CreateRock());
+            enemies.Add(CreateRock());
+            enemies.Add(CreateRock());            
             //enemies.Add(CreateBarrel());
             //enemies.Add(CreateCart());
         }
@@ -392,13 +398,15 @@ namespace ProspectorPeril
             {
                 if (spawnTimer <= 0)
                 {
-                    spawnTimer = 1000;
+                    spawnTimer = 2000;
 
-                    foreach(var enemy in enemies)
-                    {
-                        if (!enemy.HasSpawned)
-                            enemy.Spawn(new Vector2(0, 50));
-                    }
+                    if (!enemies[enemyIndex].HasSpawned)
+                        enemies[enemyIndex].Spawn(Vector2.Zero, Vector2.Zero);
+
+                    enemyIndex++;
+
+                    if (enemyIndex >= enemies.Capacity)
+                        enemyIndex = 0;
                 }
                 else
                 {
@@ -424,7 +432,7 @@ namespace ProspectorPeril
 
                 foreach (var enemy in enemies)
                 {
-                    enemy.UpdateEnemy(gameTime);
+                    enemy.Update(gameTime);
                     if (enemy.HasSpawned && enemy.Collideable)
                     {
                         var result = enemy.Collides(player);
@@ -484,7 +492,7 @@ namespace ProspectorPeril
                     fire.Draw(spriteBatch);
                     
                     foreach (var enemy in enemies)
-                        enemy.DrawEnemy(spriteBatch);                    
+                        enemy.Draw(spriteBatch);                    
 
                     hudContainer.Draw(spriteBatch);
 

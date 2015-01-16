@@ -138,11 +138,8 @@ namespace ProspectorPeril
         {
             Collideable = shouldEnable;
 
-            if (CollisionSphere == null)
-            {
-                var tempPos = new Vector3(Position, 0.0f);
-                CollisionSphere = new BoundingSphere(tempPos, Size.X);
-            }
+            var tempPos = new Vector3(SpriteCenter, 0.0f);
+            CollisionSphere = new BoundingSphere(tempPos, Width / 2.5f);            
         }
 
         /// <summary>

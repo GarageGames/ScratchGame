@@ -79,9 +79,11 @@ namespace ProspectorPeril
         public Player(List<Texture2D> textures) : base(textures) {}
 
         public override void Update(GameTime gameTime)
-        {
+        {            
             if (Speed <= 0)
                 Speed = 0;
+            else if (Speed > 99)
+                Speed = 99;
 
             // Update the player based on his state
             switch (State)
@@ -91,7 +93,7 @@ namespace ProspectorPeril
 
                 case PlayerState.Ascending:
                     playerVerticalVelocity = -3;
-
+                    Collideable = false;
                     if (Position.Y <= 10)
                     {
                         State = PlayerState.Descending;
@@ -102,6 +104,7 @@ namespace ProspectorPeril
 
                 case PlayerState.Descending:
                     playerVerticalVelocity = 2;
+                    Collideable = true;
                     speedTimer -= gameTime.ElapsedGameTime.Milliseconds;
 
                     if (speedTimer <= 0)
@@ -123,6 +126,7 @@ namespace ProspectorPeril
 
                     break;
                 case PlayerState.Attacking:
+                    Collideable = true;
                     playerVerticalVelocity = 9;
                     break;
 
