@@ -10,10 +10,9 @@ namespace ProspectorPeril
     public class Enemy : Sprite
     {
         public Vector2 SpawnPosition;
-
-        public bool HasSpawned { get; set; }
-
-        public Vector2 Velocity { get; set; }
+        public Vector2 SpawnVelocity;
+        public bool HasSpawned;
+        public Vector2 Velocity;
 
         /// <summary>
         /// Default constructor
@@ -48,6 +47,7 @@ namespace ProspectorPeril
             {
                 HasSpawned = false;
                 Position = SpawnPosition;
+                Velocity = SpawnVelocity;
             }
 
             base.Update(gameTime);
@@ -59,6 +59,7 @@ namespace ProspectorPeril
             HasSpawned = true;
             Visible = true;
             Position = SpawnPosition;
+            Velocity = SpawnVelocity;
 
             EnableCollision();
             UpdateCollision();            
@@ -73,6 +74,7 @@ namespace ProspectorPeril
 
             if (result)
             {
+                Velocity = Vector2.Zero;
                 EnableCollision(false);
                 PlayAnimation("Break");                
             }

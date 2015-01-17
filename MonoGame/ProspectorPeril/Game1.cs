@@ -217,29 +217,33 @@ namespace ProspectorPeril
             var cart = new Cart(textures);
             cart.AddAnimation("Idle", new int[] { 0 }, 0);
             cart.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);
-
+            cart.Position = cart.SpawnPosition = new Vector2(random.Next(0, 480), 360);
+            cart.Velocity = new Vector2(random.Next(1, 2), -2);
             return cart;
         }
 
         void CreateEnemies()
         {
             var rock = CreateRock();
-            rock.Position = rock.SpawnPosition = new Vector2(-200, random.Next(-15, -5));
-            rock.Velocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
+            rock.SpawnPosition = new Vector2(-200, random.Next(-15, -5));
+            rock.SpawnVelocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
             enemies.Add(rock);
+            
+            enemies.Add(CreateCart());
 
             rock = CreateRock();
-            rock.Position = rock.SpawnPosition = new Vector2(500, random.Next(-15, -5));
-            rock.Velocity = new Vector2(random.Next(-3, -2), random.Next(2, 3));
+            rock.SpawnPosition = new Vector2(500, random.Next(-15, -5));
+            rock.SpawnVelocity = new Vector2(random.Next(-3, -2), random.Next(2, 3));
             enemies.Add(rock);
+            
+            enemies.Add(CreateCart());
 
             rock = CreateRock();
-            rock.Position = rock.SpawnPosition = new Vector2(-200, random.Next(-15, -5));
-            rock.Velocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
+            rock.SpawnPosition = new Vector2(-200, random.Next(-15, -5));
+            rock.SpawnVelocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
             enemies.Add(rock);
 
-            //enemies.Add(CreateBarrel());
-            //enemies.Add(CreateCart());
+            enemies.Add(CreateCart());            
         }
 
         void CreateInterface()
