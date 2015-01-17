@@ -30,10 +30,13 @@ namespace ProspectorPeril
         {            
         }
 
-        //public override void Update(GameTime gameTime)
-        //{            
-        //    base.Update(gameTime);
-        //}
+        public override void Update(GameTime gameTime)
+        {
+            if (HasSpawned)
+                Position += Velocity;                                   
+
+            base.Update(gameTime);
+        }
 
         //public override void Spawn(Vector2 position, Vector2 velocity)
         //{

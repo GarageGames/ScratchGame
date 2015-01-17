@@ -9,6 +9,8 @@ namespace ProspectorPeril
 {    
     public class Enemy : Sprite
     {
+        public Vector2 SpawnPosition;
+
         public bool HasSpawned { get; set; }
 
         public Vector2 Velocity { get; set; }
@@ -18,7 +20,7 @@ namespace ProspectorPeril
         /// </summary>
         public Enemy()
         {
-            Position = new Vector2(500, 500);
+            Position = new Vector2(-500, -500);
         }
 
         /// <summary>
@@ -27,7 +29,7 @@ namespace ProspectorPeril
         /// <param name="texture">A valid Texture2D this sprite will render</param>
         public Enemy(Texture2D texture) : base(texture)
         {
-            Position = new Vector2(500, 500);
+            Position = new Vector2(-500, -500);
         }
 
         /// <summary>
@@ -37,21 +39,27 @@ namespace ProspectorPeril
         public Enemy(List<Texture2D> textures)
             : base(textures)
         {
-            Position = new Vector2(500, 500);
+            Position = new Vector2(-500, -500);
         }
 
         public override void Update(GameTime gameTime)
         {
+            if (Position.X < -240 || Position.X > 500 || Position.Y > 400)
+            {
+                HasSpawned = false;
+                Position = SpawnPosition;
+            }
+
             base.Update(gameTime);
         }
 
-        virtual public void Spawn(Vector2 position, Vector2 velocity)
+        virtual public void Spawn()
         {
             Frame = 0;
-            Position = position;
             HasSpawned = true;
             Visible = true;
-            Velocity = velocity;            
+            Position = SpawnPosition;
+
             EnableCollision();
             UpdateCollision();            
         }
@@ -66,16 +74,14 @@ namespace ProspectorPeril
             if (result)
             {
                 EnableCollision(false);
-                PlayAnimation("Break");
-                Velocity = Vector2.Zero;
+                PlayAnimation("Break");                
             }
 
             return result;
         }
 
         public override void OnAnimationEnd()
-        {
-            Position = new Vector2(500, 500);
+        {            
             Visible = false;
             HasSpawned = false;
         }

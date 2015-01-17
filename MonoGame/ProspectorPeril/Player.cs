@@ -94,7 +94,7 @@ namespace ProspectorPeril
                 case PlayerState.Ascending:
                     playerVerticalVelocity = -3;
                     Collideable = false;
-                    if (Position.Y <= 10)
+                    if (Position.Y <= 0)
                     {
                         State = PlayerState.Descending;
                         PlayAnimation("Float");
@@ -103,7 +103,7 @@ namespace ProspectorPeril
                     break;
 
                 case PlayerState.Descending:
-                    playerVerticalVelocity = 2;
+                    playerVerticalVelocity = 1.5f;
                     Collideable = true;
                     speedTimer -= gameTime.ElapsedGameTime.Milliseconds;
 
@@ -118,7 +118,7 @@ namespace ProspectorPeril
                 case PlayerState.Bounce:
                     playerVerticalVelocity = -3;
 
-                    if (Position.Y <= 10)
+                    if (Position.Y <= 0)
                     {
                         State = PlayerState.Descending;
                         PlayAnimation("Float");

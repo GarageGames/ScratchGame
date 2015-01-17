@@ -196,8 +196,7 @@ namespace ProspectorPeril
 
             var rock = new Rock(textures);
             rock.AddAnimation("Idle", new int[] { 0 }, 0);
-            rock.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);
-
+            rock.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);            
             return rock;
         }
 
@@ -224,16 +223,28 @@ namespace ProspectorPeril
 
         void CreateEnemies()
         {
-            enemies.Add(CreateRock());
-            enemies.Add(CreateRock());
-            enemies.Add(CreateRock());            
+            var rock = CreateRock();
+            rock.Position = rock.SpawnPosition = new Vector2(-200, random.Next(-15, -5));
+            rock.Velocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
+            enemies.Add(rock);
+
+            rock = CreateRock();
+            rock.Position = rock.SpawnPosition = new Vector2(500, random.Next(-15, -5));
+            rock.Velocity = new Vector2(random.Next(-3, -2), random.Next(2, 3));
+            enemies.Add(rock);
+
+            rock = CreateRock();
+            rock.Position = rock.SpawnPosition = new Vector2(-200, random.Next(-15, -5));
+            rock.Velocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
+            enemies.Add(rock);
+
             //enemies.Add(CreateBarrel());
             //enemies.Add(CreateCart());
         }
 
         void CreateInterface()
         {
-            var splashTex = Content.Load<Texture2D>("Placeholders/GGISplashScreen.png");
+            var splashTex = Content.Load<Texture2D>("HUD/splashPage.png");
             splashScreen = new Sprite(splashTex); 
             
             var playButtonTex = Content.Load<Texture2D>("HUD/PlayButton.png");
@@ -401,11 +412,11 @@ namespace ProspectorPeril
                     spawnTimer = 2000;
 
                     if (!enemies[enemyIndex].HasSpawned)
-                        enemies[enemyIndex].Spawn(Vector2.Zero, Vector2.Zero);
+                        enemies[enemyIndex].Spawn();
 
                     enemyIndex++;
 
-                    if (enemyIndex >= enemies.Capacity)
+                    if (enemyIndex >= enemies.Count)
                         enemyIndex = 0;
                 }
                 else
