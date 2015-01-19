@@ -10,12 +10,12 @@ namespace ProspectorPeril
     /// </summary>
     public class Sprite
     {
-        class Animation
+        public class Animation
         {
             public string Name;
             public int[] Frames;
             public float TimePerFrame;
-            public bool Looping;
+            public bool Looping;            
 
             public Animation(string name, int[] frames, float timePerFrame, bool looping)
             {
@@ -52,6 +52,16 @@ namespace ProspectorPeril
         public Vector2 Scale = new Vector2(1.0f, 1.0f);
 
         /// <summary>
+        /// The rotation of the sprite
+        /// </summary>
+        public float Rotation = 0.0f;
+
+        /// <summary>
+        /// Sprite transparency
+        /// </summary>
+        public float Alpha = 1f;
+
+        /// <summary>
         /// Whether the sprite should be drawn to the screen or not
         /// </summary>
         public bool Visible = true;
@@ -74,7 +84,7 @@ namespace ProspectorPeril
         /// <summary>
         /// The current animation being played
         /// </summary>
-        Animation CurrentAnimation = null;
+        public Animation CurrentAnimation = null;
 
         /// <summary>
         /// Order/depth of sprite on screen
@@ -251,7 +261,7 @@ namespace ProspectorPeril
             var currentTexture = Textures[Frame];
 
             if (currentTexture != null && Visible)
-                spriteBatch.Draw(currentTexture, Position, null, Color.White, 0, Vector2.Zero, Scale, SpriteEffects.None, Layer);
+                spriteBatch.Draw(currentTexture, Position, null, Color.White * Alpha, Rotation, Vector2.Zero, Scale, SpriteEffects.None, Layer);
         }
     }
 }

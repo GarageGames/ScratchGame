@@ -8,7 +8,8 @@ namespace ProspectorPeril
     public class Barrel : Enemy
     {
         bool IsPrimed = false;
-        float PrimeTimer = 2000;
+        float PrimeTimer = 1300;
+        Vector2 DecayingVelocity = Vector2.Zero;
 
         /// <summary>
         /// Default constructor
@@ -33,59 +34,65 @@ namespace ProspectorPeril
             : base(textures)
         {            
         }
-
+        
         public override void Update(GameTime gameTime)
         {
-            // Prime stuff
+            if (HasSpawned)
+            {
+                if (!IsPrimed)
+                {
+                    Position += DecayingVelocity;
+                    DecayingVelocity.Y += 0.03f;
+                }
 
-            // Base stuff
+                PrimeTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+                if (PrimeTimer <= 0 && !IsDamaged)
+                {
+                    IsPrimed = !IsPrimed;
+
+                    if (IsPrimed)
+                        PlayAnimation("Prime");
+                    else
+                        PlayAnimation("Idle");
+
+                    PrimeTimer = 2000;
+                }
+            }
+
             base.Update(gameTime);
         }
-
-        //public override void Spawn(Vector2 position, Vector2 velocity)
-        //{
-        //    base.Spawn(position, velocity);
-        //}
-        
-        //public bool Collides(Sprite sprite)
-        //{
-        //    if (!sprite.Collideable)
-        //        return false;
-
-        //    var result = CollisionSphere.Intersects(sprite.CollisionSphere);
-
-        //    if (result)
-        //    {                
-        //        EnableCollision(false);
-        //        PlayAnimation("Break");
-        //        Velocity = Vector2.Zero;
-        //    }
-
-        //    return result;
-        //}
-
-        //public override void OnAnimationEnd()
-        //{
-        //    Position = new Vector2(500, 500);
-        //    Visible = false;
-        //    HasSpawned = false;
-        //}
         
         public override bool Collides(Sprite sprite)
-        {
+        {            
+            bool collided = base.Collides(sprite);
+
             var player = (Player)sprite;
-            bool collided = CollisionSphere.Intersects(sprite.CollisionSphere);
 
             if (IsPrimed && collided)
+            {
+                PlayAnimation("Explode");
                 player.Damage();
+            }
 
             return collided;
         }
 
-        public void Spawn(Random rand)
+        public override void Spawn()
         {
-            IsPrimed = true;
+            DecayingVelocity = Velocity;
+            IsPrimed = false;
             PrimeTimer = 2000;
+            base.Spawn();
+        }
+
+        public override void OnAnimationEnd()
+        {
+            if (CurrentAnimation.Name == "Break" || CurrentAnimation.Name == "Explode")
+            {
+                Visible = false;
+                HasSpawned = false;
+            }
         }
     }
 }

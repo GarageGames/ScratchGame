@@ -80,12 +80,7 @@ namespace ProspectorPeril
 
         public override void Update(GameTime gameTime)
         {            
-            if (Speed <= 0)
-                Speed = 0;
-            else if (Speed > 99)
-                Speed = 99;
-
-            // Update the player based on his state
+           // Update the player based on his state
             switch (State)
             {
                 case PlayerState.Idle:
@@ -103,7 +98,7 @@ namespace ProspectorPeril
                     break;
 
                 case PlayerState.Descending:
-                    playerVerticalVelocity = 1.5f;
+                    playerVerticalVelocity = 1.1f;
                     Collideable = true;
                     speedTimer -= gameTime.ElapsedGameTime.Milliseconds;
 
@@ -117,7 +112,7 @@ namespace ProspectorPeril
 
                 case PlayerState.Bounce:
                     playerVerticalVelocity = -3;
-
+                    Collideable = true;
                     if (Position.Y <= 0)
                     {
                         State = PlayerState.Descending;
@@ -135,6 +130,9 @@ namespace ProspectorPeril
             }
 
             Position.Y += playerVerticalVelocity;
+
+            Speed = MathHelper.Clamp(Speed, 0, 99);
+            Position.X = MathHelper.Clamp(Position.X, 0 - Width / 2, 480 - Width / 2);
 
             base.Update(gameTime);
         }

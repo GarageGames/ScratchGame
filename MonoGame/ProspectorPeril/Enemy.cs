@@ -13,6 +13,7 @@ namespace ProspectorPeril
         public Vector2 SpawnVelocity;
         public bool HasSpawned;
         public Vector2 Velocity;
+        public bool IsDamaged = false;
 
         /// <summary>
         /// Default constructor
@@ -43,10 +44,10 @@ namespace ProspectorPeril
 
         public override void Update(GameTime gameTime)
         {
-            if (Position.X < -240 || Position.X > 500 || Position.Y > 400)
-            {
+            if (Position.X < -200 || Position.X > 500 || Position.Y > 400)
+            {                
                 HasSpawned = false;
-                Position = SpawnPosition;
+                Position = SpawnPosition;                
                 Velocity = SpawnVelocity;
             }
 
@@ -60,6 +61,7 @@ namespace ProspectorPeril
             Visible = true;
             Position = SpawnPosition;
             Velocity = SpawnVelocity;
+            IsDamaged = false;
 
             EnableCollision();
             UpdateCollision();            
@@ -76,14 +78,15 @@ namespace ProspectorPeril
             {
                 Velocity = Vector2.Zero;
                 EnableCollision(false);
-                PlayAnimation("Break");                
+                PlayAnimation("Break");
+                IsDamaged = true;
             }
 
             return result;
         }
 
         public override void OnAnimationEnd()
-        {            
+        {
             Visible = false;
             HasSpawned = false;
         }

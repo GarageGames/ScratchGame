@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Audio;
 #endregion
 
 /*
@@ -54,13 +55,16 @@ namespace ProspectorPeril
         #endregion
 
         #region Game variables
-        GameState gameState;
+        GameState gameState;        
+        int topSpeed = 0;
+        float currentTime = 0.0f;
+        float topTime = 0.0f;
         Sprite background;
         Launcher launcher;
         Explosion fire;
         Sprite hudContainer;
         Sprite[] hearts = new Sprite[3];
-
+        Sprite[] timer = new Sprite[4];
         float scrollRate = 0.25f;
         float scrollY;
         
@@ -73,6 +77,18 @@ namespace ProspectorPeril
         int enemyIndex = 0;
         #endregion
 
+        #region Audio variables
+        //SoundEffectInstance currentMusicInstance;
+        //SoundEffect menuMusic;
+        //SoundEffect backgroundMusic;
+        //SoundEffect barrelBreak;
+        //SoundEffect cartBreak;
+        //SoundEffect death;
+        //SoundEffect fall;
+        //SoundEffect launch;
+        //SoundEffect rockBreak;
+        //SoundEffect barrelExplode;
+        #endregion
         public Game1()
             : base()
         {
@@ -175,8 +191,10 @@ namespace ProspectorPeril
             var barrel = new Barrel(textures);
             barrel.AddAnimation("Idle", new int[] { 0 }, 0);
             barrel.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);
-            barrel.AddAnimation("Prime", new int[] { 0, 5, 0, 5, 0, 5 }, 70);
+            barrel.AddAnimation("Prime", new int[] { 0, 5, 0, 5, 0, 5 }, 70, true);
             barrel.AddAnimation("Explode", new int[] { 5, 6, 7, 8, 9, 10, 11}, 70);
+            barrel.Position = barrel.SpawnPosition = new Vector2(random.Next(20, 300), 366);            
+            barrel.Velocity = barrel.SpawnVelocity = new Vector2(1.2f, -3.5f);
             return barrel;
         }
 
@@ -218,77 +236,98 @@ namespace ProspectorPeril
             cart.AddAnimation("Idle", new int[] { 0 }, 0);
             cart.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);
             cart.Position = cart.SpawnPosition = new Vector2(random.Next(0, 480), 360);
-            cart.Velocity = new Vector2(random.Next(1, 2), -2);
+            cart.Velocity = cart.SpawnVelocity = new Vector2(random.Next(1, 2), -4);
+            
             return cart;
         }
 
         void CreateEnemies()
-        {
+        {            
             var rock = CreateRock();
-            rock.SpawnPosition = new Vector2(-200, random.Next(-15, -5));
+            rock.SpawnPosition = new Vector2(-100, random.Next(-15, -5));
             rock.SpawnVelocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
             enemies.Add(rock);
-            
+            enemies.Add(CreateBarrel());
             enemies.Add(CreateCart());
 
+            enemies.Add(CreateBarrel());
+            enemies.Add(CreateCart()); 
             rock = CreateRock();
-            rock.SpawnPosition = new Vector2(500, random.Next(-15, -5));
+            rock.SpawnPosition = new Vector2(480, random.Next(-15, -5));
             rock.SpawnVelocity = new Vector2(random.Next(-3, -2), random.Next(2, 3));
             enemies.Add(rock);
-            
-            enemies.Add(CreateCart());
 
             rock = CreateRock();
-            rock.SpawnPosition = new Vector2(-200, random.Next(-15, -5));
+            rock.SpawnPosition = new Vector2(-100, random.Next(-15, -5));
             rock.SpawnVelocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
             enemies.Add(rock);
-
-            enemies.Add(CreateCart());            
+            enemies.Add(CreateCart());
+            enemies.Add(CreateBarrel());
         }
 
-        void CreateInterface()
+        void CreateSpeedGui()
         {
-            var splashTex = Content.Load<Texture2D>("HUD/splashPage.png");
-            splashScreen = new Sprite(splashTex); 
-            
-            var playButtonTex = Content.Load<Texture2D>("HUD/PlayButton.png");
-            playButton = new Sprite(playButtonTex);
-            
-            var playTextureCenter = new Vector2(playButtonTex.Width / 2f, playButtonTex.Height / 2f);
-            playButton.Position = ViewportCenter - playTextureCenter;
-
-            var endScreenTex = Content.Load<Texture2D>("HUD/endScreenOverlay.png");
-            endScreen = new Sprite(endScreenTex);
-            endScreen.Visible = false;
-
-            var startScreenTex = Content.Load<Texture2D>("HUD/startScreen.png");
-            startScreen = new Sprite(startScreenTex);
-
-            var hudTex = Content.Load<Texture2D>("HUD/HUD.png");
-            hudContainer = new Sprite(hudTex);
-            hudContainer.Position.Y = GraphicsViewport.Height - hudTex.Height;
-
-            for(int i = 0; i < 3; i++)
-            {
-                var texture = Content.Load<Texture2D>("HUD/heart.png");
-                hearts[i] = new Sprite(texture);
-                hearts[i].Position.Y = hudContainer.Position.Y;
-                hearts[i].Position.X = GraphicsViewport.Bounds.Right / 1.5f - texture.Width * (i + 1);
-            }
-
-            List<Texture2D> numberTextures = new List<Texture2D>();
+            List<Texture2D> speedTextures = new List<Texture2D>();
 
             for (int i = 0; i < 10; i++)
-                numberTextures.Add(Content.Load<Texture2D>("HUD/number_" + i + ".png"));
+                speedTextures.Add(Content.Load<Texture2D>("HUD/number_" + i + ".png"));
 
-            SpeedDigits[0] = new Sprite(numberTextures);
-            SpeedDigits[1] = new Sprite(numberTextures);
+            SpeedDigits[0] = new Sprite(speedTextures);
+            SpeedDigits[1] = new Sprite(speedTextures);
 
             SpeedDigits[0].Frame = SpeedDigits[1].Frame = 0;
 
             SpeedDigits[0].Position.Y = SpeedDigits[1].Position.Y = hudContainer.Position.Y;
             SpeedDigits[0].Position.X = 100;
             SpeedDigits[1].Position.X = SpeedDigits[0].Position.X + 26;
+        }
+
+        void CreateTimeGUI()
+        {
+            List<Texture2D> timeTextures = new List<Texture2D>();
+
+            for (int i = 0; i < 10; i++)
+                timeTextures.Add(Content.Load<Texture2D>("HUD/number_" + i + "b.png"));
+
+            for (int i = 0; i < 4; i++ )
+                timer[i] = new Sprite(timeTextures);
+            
+            timer[0].Frame = timer[1].Frame = timer[2].Frame = timer[3].Frame = 0;
+
+            timer[0].Position.Y = timer[1].Position.Y = timer[2].Position.Y = timer[3].Position.Y = hudContainer.Position.Y;
+
+            timer[0].Position.X = 448;
+            timer[1].Position.X = timer[0].Position.X - 25;
+            timer[2].Position.X = timer[0].Position.X - 60;
+            timer[3].Position.X = timer[0].Position.X - 85;            
+        }
+
+        void CreateInterface()
+        {            
+            splashScreen = new Sprite(Content.Load<Texture2D>("HUD/splashPage.png"));
+ 
+            playButton = new Sprite(Content.Load<Texture2D>("HUD/PlayButton.png"));
+
+            var playTextureCenter = new Vector2(playButton.Textures[0].Width / 2f, playButton.Textures[0].Height / 2f);
+            playButton.Position = ViewportCenter - playTextureCenter;
+            
+            endScreen = new Sprite(Content.Load<Texture2D>("HUD/endScreenOverlay.png"));
+            endScreen.Visible = false;
+            
+            startScreen = new Sprite(Content.Load<Texture2D>("HUD/startScreen.png"));
+            
+            hudContainer = new Sprite(Content.Load<Texture2D>("HUD/HUD.png"));
+            hudContainer.Position.Y = GraphicsViewport.Height - hudContainer.Textures[0].Height;
+
+            for(int i = 0; i < 3; i++)
+            {                
+                hearts[i] = new Sprite(Content.Load<Texture2D>("HUD/heart.png"));
+                hearts[i].Position.Y = hudContainer.Position.Y;
+                hearts[i].Position.X = GraphicsViewport.Bounds.Right / 1.5f - hearts[i].Textures[0].Width * (i + 1);
+            }
+
+            CreateSpeedGui();
+            CreateTimeGUI();
 
             Arrow = new Sprite(Content.Load<Texture2D>("HUD/arrow_01.png"));
         }
@@ -309,6 +348,29 @@ namespace ProspectorPeril
             fire.PlayAnimation("Idle");
         }
 
+        void CreateAudio()
+        {
+            /*             
+            menuMusic = Content.Load<SoundEffect>("Audio/MenuMusic");
+            currentMusicInstance = menuMusic.CreateInstance();
+            currentMusicInstance.IsLooped = true;
+
+            backgroundMusic = Content.Load<SoundEffect>("Audio/BackgroundMusic");
+            instance = backgroundMusic.CreateInstance();
+            instance.IsLooped = true;
+             
+            barrelBreak = Content.Load<SoundEffect>("Audio/barrel_break");
+            cartBreak = Content.Load<SoundEffect>("Audio/cart_break");
+            death = Content.Load<SoundEffect>("Audio/death");
+            fall = Content.Load<SoundEffect>("Audio/fall_off_screen");
+            launch = Content.Load<SoundEffect>("Audio/launch_explosion");
+            rockBreak = Content.Load<SoundEffect>("Audio/rock_break");
+            barrelExplode = Content.Load<SoundEffect>("Audio/volatile_barrel_explosion");
+            
+            currentMusicInstance.Play();
+            */
+        }
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -317,7 +379,8 @@ namespace ProspectorPeril
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-                       
+
+            CreateAudio();            
             CreateInterface();
             CreateEnvironment();
             CreatePlayer();
@@ -326,7 +389,7 @@ namespace ProspectorPeril
         }
         
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
-        {            
+        {
             #region Mouse Handling
             if (currentMouseState.LeftButton == ButtonState.Pressed)
                 lastMouseState = currentMouseState;
@@ -341,8 +404,12 @@ namespace ProspectorPeril
                         gameState++;
                         splashScreen.Visible = false;
                         break;
-                    case GameState.Menu:                        
+                    case GameState.Menu:
                         playButton.Visible = false;
+                        //currentMusicInstance.Stop();
+                        //currentMusicInstance = backgroundMusic.CreateInstance();
+                        //currentMusicInstance.IsLooped = true;
+                        //currentMusicInstance.Play();
                         gameState++;
                         break;
                     default:
@@ -359,7 +426,7 @@ namespace ProspectorPeril
             
             // Up key pressed: Launch the player if they are waiting to be launched
             if (gameState == GameState.Launch && currentKeyState.IsKeyDown(Keys.Up))
-            {
+            {                
                 launcher.PlayAnimation("Launch");
                 player.PlayAnimation("Launch");
                 
@@ -387,6 +454,14 @@ namespace ProspectorPeril
             #endregion
         }        
 
+        void UpdateTimer(float seconds)
+        {
+            timer[0].Frame = (int)seconds % 60 % 10;
+            timer[1].Frame = (int)seconds % 60 / 10;
+            timer[2].Frame = (int)seconds / 60 % 10;
+            timer[2].Frame = (int)seconds / 60 / 10;
+        }
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -411,9 +486,15 @@ namespace ProspectorPeril
             // If the game is running, update the main systems
             if (gameState == GameState.Running)
             {
+                currentTime += deltaSeconds;
+
+                if (currentTime > topTime)
+                    topTime = currentTime;
+
+                UpdateTimer(currentTime / 1000);
                 if (spawnTimer <= 0)
                 {
-                    spawnTimer = 2000;
+                    spawnTimer = 1000;
 
                     if (!enemies[enemyIndex].HasSpawned)
                         enemies[enemyIndex].Spawn();
@@ -443,14 +524,18 @@ namespace ProspectorPeril
 
                 launcher.Update(gameTime);
                 player.Update(gameTime);
+
+                if (player.Speed >= topSpeed)
+                    topSpeed = player.Speed;
+
                 fire.Update(gameTime);
 
-                foreach (var enemy in enemies)
+                for (int i = 0; i < enemies.Count; i++)
                 {
-                    enemy.Update(gameTime);
-                    if (enemy.HasSpawned && enemy.Collideable)
+                    enemies[i].Update(gameTime);
+                    if (enemies[i].HasSpawned && enemies[i].Collideable)
                     {
-                        var result = enemy.Collides(player);
+                        var result = enemies[i].Collides(player);
 
                         if (result)
                             player.Bounce();
@@ -472,7 +557,7 @@ namespace ProspectorPeril
                     SpeedDigits[1].Frame = int.Parse(player.Speed.ToString().Substring(1, 1));
                 }
                 else
-                    SpeedDigits[1].Visible = false;               
+                    SpeedDigits[1].Visible = false;
             }
             
             base.Update(gameTime);
@@ -514,9 +599,19 @@ namespace ProspectorPeril
                     foreach (var digit in SpeedDigits)
                         digit.Draw(spriteBatch);
 
-                    foreach(var heart in hearts)
-                        heart.Draw(spriteBatch);
+                    for (int i = 0; i < hearts.Length; i++)
+                    {
+                        if (player.Lives <= i)
+                            hearts[i].Alpha = 0.5f;
 
+                        hearts[i].Draw(spriteBatch);
+                    }
+
+                    for (int i = 0; i < timer.Length; i++ )
+                    {
+                        timer[i].Draw(spriteBatch);
+                    }
+                    
                     endScreen.Draw(spriteBatch);
                     break;                
             }

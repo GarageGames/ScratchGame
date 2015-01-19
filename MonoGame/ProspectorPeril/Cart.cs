@@ -33,7 +33,7 @@ namespace ProspectorPeril
             if (HasSpawned)
             {
                 Position += DecayingVelocity;
-                DecayingVelocity.Y -= 0.1f;
+                DecayingVelocity.Y += 0.03f;
             }
 
             base.Update(gameTime);
