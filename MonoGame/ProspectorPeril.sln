@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Windows Desktop
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProspectorPeril", "ProspectorPeril\ProspectorPeril.csproj", "{A4718F1E-5C8B-421D-9D31-04B02813F64A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProspectorPeril", "ProspectorPeril\ProspectorPeril.csproj", "{08A39647-7536-4265-AE64-13546F8BB1AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A4718F1E-5C8B-421D-9D31-04B02813F64A}.Debug|x86.ActiveCfg = Debug|x86
-		{A4718F1E-5C8B-421D-9D31-04B02813F64A}.Debug|x86.Build.0 = Debug|x86
-		{A4718F1E-5C8B-421D-9D31-04B02813F64A}.Release|x86.ActiveCfg = Release|x86
-		{A4718F1E-5C8B-421D-9D31-04B02813F64A}.Release|x86.Build.0 = Release|x86
+		{08A39647-7536-4265-AE64-13546F8BB1AF}.Debug|x86.ActiveCfg = Debug|x86
+		{08A39647-7536-4265-AE64-13546F8BB1AF}.Debug|x86.Build.0 = Debug|x86
+		{08A39647-7536-4265-AE64-13546F8BB1AF}.Release|x86.ActiveCfg = Release|x86
+		{08A39647-7536-4265-AE64-13546F8BB1AF}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

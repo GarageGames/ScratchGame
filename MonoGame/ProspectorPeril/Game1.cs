@@ -1,18 +1,13 @@
-﻿#region Using Statements
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Audio;
-#endregion
-
-/*
- * All projectiles are one frame per 0.07 secs
-Launcher is one frame per 0.1 secs
-First frame of barrel exploding anim is same as first frame of normal (so I just don't use the second). 2nd frame of exploding is red state. 3rd frame and on is exploding animation.
-Prospector waits 0.1 secs between frames in both launch and attack anims
- */
+using Microsoft.Xna.Framework.Media;
 
 namespace ProspectorPeril
 {
@@ -42,7 +37,7 @@ namespace ProspectorPeril
         #endregion
 
         #region Player variables
-        Player player;        
+        Player player;
         #endregion
 
         #region Menu Variables
@@ -57,7 +52,7 @@ namespace ProspectorPeril
         #endregion
 
         #region Game variables
-        GameState gameState;        
+        GameState gameState;
         int topSpeed = 0;
         float currentTime = 0.0f;
         float topTime = 0.0f;
@@ -69,7 +64,7 @@ namespace ProspectorPeril
         Sprite[] timer = new Sprite[4];
         float scrollRate = 0.25f;
         float scrollY;
-        
+
         Sprite[] SpeedDigits = new Sprite[2];
         Sprite Arrow;
 
@@ -114,49 +109,49 @@ namespace ProspectorPeril
             graphics.ApplyChanges();
 
             GraphicsViewport = graphics.GraphicsDevice.Viewport;
-            ViewportCenter = new Vector2(GraphicsViewport.Width / 2, GraphicsViewport.Height / 2);
+            ViewportCenter = new Vector2(240, 180);
 
             base.Initialize();
         }
 
         void CreatePlayer()
-        {   
-            string[] playerTextures = {   "character_prospector/PPeril_character_Static.png", 
-                                          "character_prospector/PPeril_character_launch01.png", 
-                                          "character_prospector/PPeril_character_launch02.png", 
-                                          "character_prospector/PPeril_character_float.png", 
-                                          "character_prospector/PPeril_character_attack01.png", 
-                                          "character_prospector/PPeril_character_attack02.png"                                           
+        {
+            string[] playerTextures = {   "character_prospector/PPeril_character_Static", 
+                                          "character_prospector/PPeril_character_launch01", 
+                                          "character_prospector/PPeril_character_launch02", 
+                                          "character_prospector/PPeril_character_float", 
+                                          "character_prospector/PPeril_character_attack01", 
+                                          "character_prospector/PPeril_character_attack02"                                           
                                       };
 
             var textures = new List<Texture2D>();
 
-            foreach(var textureString in playerTextures)
+            foreach (var textureString in playerTextures)
                 textures.Add(Content.Load<Texture2D>(textureString));
 
-            player = new Player(textures);            
+            player = new Player(textures);
 
-            player.AddAnimation("Idle", new int[] {0}, 0);
+            player.AddAnimation("Idle", new int[] { 0 }, 0);
             player.AddAnimation("Launch", new int[] { 1, 2 }, 100);
-            player.AddAnimation("Float", new int[] {3}, 0);
-            player.AddAnimation("Attack", new int[] { 4, 5 , 3}, 100);
+            player.AddAnimation("Float", new int[] { 3 }, 0);
+            player.AddAnimation("Attack", new int[] { 4, 5, 3 }, 100);
 
             player.Scale = new Vector2(0.6f, 0.6f);
             player.Position.X = ViewportCenter.X - player.SpriteCenter.X;
             player.Position.Y = 116;
-            
+
             player.EnableCollision();
         }
 
         void CreateLauncher()
         {
-            string[] launcherTextures = {   "launcher/launcher01.png", 
-                                          "launcher/launcher02.png", 
-                                          "launcher/launcher03.png", 
-                                          "launcher/launcher04.png", 
-                                          "launcher/launcher05.png", 
-                                          "launcher/launcher06.png",
-                                          "launcher/launcher07.png" 
+            string[] launcherTextures = {   "launcher/launcher01", 
+                                          "launcher/launcher02", 
+                                          "launcher/launcher03", 
+                                          "launcher/launcher04", 
+                                          "launcher/launcher05", 
+                                          "launcher/launcher06",
+                                          "launcher/launcher07" 
                                       };
 
             var textures = new List<Texture2D>();
@@ -167,24 +162,24 @@ namespace ProspectorPeril
             launcher = new Launcher(textures);
             launcher.Scale = new Vector2(0.75f, 0.75f);
             launcher.Position = new Vector2(36.5f, 106.5f);
-            launcher.AddAnimation("Idle", new int[] { 0}, 0);
-            launcher.AddAnimation("Launch", new int[] { 0, 1, 2, 3, 4, 5, 6 }, 100);            
+            launcher.AddAnimation("Idle", new int[] { 0 }, 0);
+            launcher.AddAnimation("Launch", new int[] { 0, 1, 2, 3, 4, 5, 6 }, 100);
         }
 
         Enemy CreateBarrel()
         {
-            string[] barrelTextures = {   "enemy_barrel/enemyBarrel_01.png", 
-                                          "enemy_barrel/enemyBarrel_02.png", 
-                                          "enemy_barrel/enemyBarrel_03.png", 
-                                          "enemy_barrel/enemyBarrel_04.png", 
-                                          "enemy_barrel/enemyBarrel_05.png",
-                                          "enemy_barrel_exploding/enemyBarellExplode_02.png",
-                                          "enemy_barrel_exploding/enemyBarellExplode_03.png",
-                                          "enemy_barrel_exploding/enemyBarellExplode_04.png",
-                                          "enemy_barrel_exploding/enemyBarellExplode_05.png",
-                                          "enemy_barrel_exploding/enemyBarellExplode_06.png",
-                                          "enemy_barrel_exploding/enemyBarellExplode_07.png",
-                                          "enemy_barrel_exploding/enemyBarellExplode_08.png",
+            string[] barrelTextures = {   "enemy_barrel/enemyBarrel_01", 
+                                          "enemy_barrel/enemyBarrel_02", 
+                                          "enemy_barrel/enemyBarrel_03", 
+                                          "enemy_barrel/enemyBarrel_04", 
+                                          "enemy_barrel/enemyBarrel_05",
+                                          "enemy_barrel_exploding/enemyBarellExplode_02",
+                                          "enemy_barrel_exploding/enemyBarellExplode_03",
+                                          "enemy_barrel_exploding/enemyBarellExplode_04",
+                                          "enemy_barrel_exploding/enemyBarellExplode_05",
+                                          "enemy_barrel_exploding/enemyBarellExplode_06",
+                                          "enemy_barrel_exploding/enemyBarellExplode_07",
+                                          "enemy_barrel_exploding/enemyBarellExplode_08",
                                       };
 
             var textures = new List<Texture2D>();
@@ -196,19 +191,19 @@ namespace ProspectorPeril
             barrel.AddAnimation("Idle", new int[] { 0 }, 0);
             barrel.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);
             barrel.AddAnimation("Prime", new int[] { 0, 5, 0, 5, 0, 5 }, 70, true);
-            barrel.AddAnimation("Explode", new int[] { 5, 6, 7, 8, 9, 10, 11}, 70);
-            barrel.Position = barrel.SpawnPosition = new Vector2(random.Next(20, 300), 366);            
+            barrel.AddAnimation("Explode", new int[] { 5, 6, 7, 8, 9, 10, 11 }, 70);
+            barrel.Position = barrel.SpawnPosition = new Vector2(random.Next(20, 300), 366);
             barrel.Velocity = barrel.SpawnVelocity = new Vector2(1.2f, -3.5f);
             return barrel;
         }
 
         Enemy CreateRock()
         {
-            string[] rockTextures = {   "enemy_rock/enemy_rock01.png", 
-                                          "enemy_rock/enemy_rock02.png", 
-                                          "enemy_rock/enemy_rock03.png", 
-                                          "enemy_rock/enemy_rock04.png", 
-                                          "enemy_rock/enemy_rock05.png" 
+            string[] rockTextures = {   "enemy_rock/enemy_rock01", 
+                                          "enemy_rock/enemy_rock02", 
+                                          "enemy_rock/enemy_rock03", 
+                                          "enemy_rock/enemy_rock04", 
+                                          "enemy_rock/enemy_rock05" 
                                       };
 
             var textures = new List<Texture2D>();
@@ -218,17 +213,17 @@ namespace ProspectorPeril
 
             var rock = new Rock(textures);
             rock.AddAnimation("Idle", new int[] { 0 }, 0);
-            rock.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);            
+            rock.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);
             return rock;
         }
 
         Enemy CreateCart()
         {
-            string[] cartTextures = {   "enemy_cart/enemy_cart01.png", 
-                                          "enemy_cart/enemy_cart02.png", 
-                                          "enemy_cart/enemy_cart03.png", 
-                                          "enemy_cart/enemy_cart04.png", 
-                                          "enemy_cart/enemy_cart05.png" 
+            string[] cartTextures = {   "enemy_cart/enemy_cart01", 
+                                          "enemy_cart/enemy_cart02", 
+                                          "enemy_cart/enemy_cart03", 
+                                          "enemy_cart/enemy_cart04", 
+                                          "enemy_cart/enemy_cart05" 
                                       };
 
             var textures = new List<Texture2D>();
@@ -241,12 +236,12 @@ namespace ProspectorPeril
             cart.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);
             cart.Position = cart.SpawnPosition = new Vector2(random.Next(0, 480), 360);
             cart.Velocity = cart.SpawnVelocity = new Vector2(random.Next(1, 2), -4);
-            
+
             return cart;
         }
 
         void CreateEnemies()
-        {            
+        {
             var rock = CreateRock();
             rock.SpawnPosition = new Vector2(-100, random.Next(-15, -5));
             rock.SpawnVelocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
@@ -255,7 +250,7 @@ namespace ProspectorPeril
             enemies.Add(CreateCart());
 
             enemies.Add(CreateBarrel());
-            enemies.Add(CreateCart()); 
+            enemies.Add(CreateCart());
             rock = CreateRock();
             rock.SpawnPosition = new Vector2(480, random.Next(-15, -5));
             rock.SpawnVelocity = new Vector2(random.Next(-3, -2), random.Next(2, 3));
@@ -274,7 +269,7 @@ namespace ProspectorPeril
             List<Texture2D> speedTextures = new List<Texture2D>();
 
             for (int i = 0; i < 10; i++)
-                speedTextures.Add(Content.Load<Texture2D>("HUD/number_" + i + ".png"));
+                speedTextures.Add(Content.Load<Texture2D>("HUD/number_" + i));
 
             SpeedDigits[0] = new Sprite(speedTextures);
             SpeedDigits[1] = new Sprite(speedTextures);
@@ -291,11 +286,11 @@ namespace ProspectorPeril
             List<Texture2D> timeTextures = new List<Texture2D>();
 
             for (int i = 0; i < 10; i++)
-                timeTextures.Add(Content.Load<Texture2D>("HUD/number_" + i + "b.png"));
+                timeTextures.Add(Content.Load<Texture2D>("HUD/number_" + i + "b"));
 
-            for (int i = 0; i < 4; i++ )
+            for (int i = 0; i < 4; i++)
                 timer[i] = new Sprite(timeTextures);
-            
+
             timer[0].Frame = timer[1].Frame = timer[2].Frame = timer[3].Frame = 0;
 
             timer[0].Position.Y = timer[1].Position.Y = timer[2].Position.Y = timer[3].Position.Y = hudContainer.Position.Y;
@@ -303,75 +298,75 @@ namespace ProspectorPeril
             timer[0].Position.X = 448;
             timer[1].Position.X = timer[0].Position.X - 25;
             timer[2].Position.X = timer[0].Position.X - 60;
-            timer[3].Position.X = timer[0].Position.X - 85;            
+            timer[3].Position.X = timer[0].Position.X - 85;
         }
 
         void CreateInterface()
-        {            
-            splashScreen = new Sprite(Content.Load<Texture2D>("HUD/splashPage.png"));
- 
-            playButton = new Sprite(Content.Load<Texture2D>("HUD/PlayButton.png"));
+        {
+            splashScreen = new Sprite(Content.Load<Texture2D>("HUD/splashPage"));
+
+            playButton = new Sprite(Content.Load<Texture2D>("HUD/PlayButton"));
 
             var buttonTextureCenter = new Vector2(playButton.Textures[0].Width / 2f, playButton.Textures[0].Height / 2f);
             playButton.Position = new Vector2(ViewportCenter.X - buttonTextureCenter.X, 280 - buttonTextureCenter.Y);
 
-            nextButton = new Sprite(Content.Load<Texture2D>("Hud/NextButton.png"));
+            nextButton = new Sprite(Content.Load<Texture2D>("Hud/NextButton"));
             nextButton.Position = playButton.Position;
 
-            scoreButton = new Sprite(Content.Load<Texture2D>("Hud/ScoreButton.png"));
+            scoreButton = new Sprite(Content.Load<Texture2D>("Hud/ScoreButton"));
             scoreButton.Position = new Vector2(175, 200);
 
-            restartButton = new Sprite(Content.Load<Texture2D>("Hud/RestartButton.png"));
+            restartButton = new Sprite(Content.Load<Texture2D>("Hud/RestartButton"));
             restartButton.Position = new Vector2(175, 250);
 
-            endScreen = new Sprite(Content.Load<Texture2D>("HUD/endScreenOverlay.png"));
+            endScreen = new Sprite(Content.Load<Texture2D>("HUD/endScreenOverlay"));
             endScreen.Visible = false;
-            
-            startScreen = new Sprite(Content.Load<Texture2D>("HUD/startScreen.png"));
-            
-            hudContainer = new Sprite(Content.Load<Texture2D>("HUD/HUD.png"));
-            hudContainer.Position.Y = GraphicsViewport.Height - hudContainer.Textures[0].Height;
 
-            for(int i = 0; i < 3; i++)
-            {                
-                hearts[i] = new Sprite(Content.Load<Texture2D>("HUD/heart.png"));
+            startScreen = new Sprite(Content.Load<Texture2D>("HUD/startScreen"));
+
+            hudContainer = new Sprite(Content.Load<Texture2D>("HUD/HUD"));
+            hudContainer.Position.Y = 360 - hudContainer.Textures[0].Height;
+
+            for (int i = 0; i < 3; i++)
+            {
+                hearts[i] = new Sprite(Content.Load<Texture2D>("HUD/heart"));
                 hearts[i].Position.Y = hudContainer.Position.Y;
-                hearts[i].Position.X = GraphicsViewport.Bounds.Right / 1.5f - hearts[i].Textures[0].Width * (i + 1);
+                hearts[i].Position.X = 480 / 1.5f - hearts[i].Textures[0].Width * (i + 1);
             }
 
             CreateSpeedGui();
             CreateTimeGUI();
 
-            Arrow = new Sprite(Content.Load<Texture2D>("HUD/arrow_01.png"));
+            Arrow = new Sprite(Content.Load<Texture2D>("HUD/arrow_01"));
         }
 
         public void CreateEnvironment()
         {
-            var backgroundTex = Content.Load<Texture2D>("BG/Background.png");
+            var backgroundTex = Content.Load<Texture2D>("BG/Background");
             background = new Sprite(backgroundTex);
 
             List<Texture2D> fireTextures = new List<Texture2D>();
 
-            for(int i = 1; i < 13; i++)
-                fireTextures.Add(Content.Load<Texture2D>("wallOfFire/wallOfFire_" + i + ".png"));
+            for (int i = 1; i < 13; i++)
+                fireTextures.Add(Content.Load<Texture2D>("wallOfFire/wallOfFire_" + i));
 
             fire = new Explosion(fireTextures);
-            fire.AddAnimation("Idle", new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, 100, true);
+            fire.AddAnimation("Idle", new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, 100, true);
             fire.Position.Y = hudContainer.Position.Y;
             fire.PlayAnimation("Idle");
         }
 
         void CreateAudio()
         {
-                         
-            menuMusic = Content.Load<SoundEffect>("Audio/MenuMusic.xnb");
+
+            menuMusic = Content.Load<SoundEffect>("Audio/MenuMusic.wav");
             currentMusicInstance = menuMusic.CreateInstance();
             currentMusicInstance.IsLooped = true;
 
             backgroundMusic = Content.Load<SoundEffect>("Audio/BackgroundMusic");
             //instance = backgroundMusic.CreateInstance();
             //instance.IsLooped = true;
-             
+
             barrelBreak = Content.Load<SoundEffect>("Audio/barrel_break");
             cartBreak = Content.Load<SoundEffect>("Audio/cart_break");
             death = Content.Load<SoundEffect>("Audio/death");
@@ -379,9 +374,9 @@ namespace ProspectorPeril
             launch = Content.Load<SoundEffect>("Audio/launch_explosion");
             rockBreak = Content.Load<SoundEffect>("Audio/rock_break");
             barrelExplode = Content.Load<SoundEffect>("Audio/volatile_barrel_explosion");
-            
+
             currentMusicInstance.Play();
-            
+
         }
 
         /// <summary>
@@ -393,14 +388,14 @@ namespace ProspectorPeril
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            CreateAudio();            
+            CreateAudio();
             CreateInterface();
             CreateEnvironment();
             CreatePlayer();
             CreateLauncher();
-            CreateEnemies();            
+            CreateEnemies();
         }
-        
+
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
         {
             if (currentKeyState.IsKeyDown(Keys.Up))
@@ -429,13 +424,13 @@ namespace ProspectorPeril
             if (currentMouseState.LeftButton == ButtonState.Released && lastMouseState.LeftButton == ButtonState.Pressed)
             {
                 lastMouseState = currentMouseState;
-
+                var mousePoint = new Point(lastMouseState.X, lastMouseState.Y);
                 switch (gameState)
                 {
                     case GameState.Menu:
-                        if (playButton.IsClicked(lastMouseState.Position))
-                            gameState++;                            
-                        
+                        if (playButton.IsClicked(mousePoint))
+                            gameState++;
+
                         //currentMusicInstance.Stop();
                         //currentMusicInstance = backgroundMusic.CreateInstance();
                         //currentMusicInstance.IsLooped = true;
@@ -443,17 +438,17 @@ namespace ProspectorPeril
                         //gameState++;
                         break;
                     case GameState.GameOver:
-                        if (nextButton.IsClicked(lastMouseState.Position))
+                        if (nextButton.IsClicked(mousePoint))
                         {
                             splashScreen.Visible = true;
                             gameState++;
                         }
                         break;
                     case GameState.End:
-                        if (scoreButton.IsClicked(lastMouseState.Position))
+                        if (scoreButton.IsClicked(mousePoint))
                             gameState--;
 
-                        if (restartButton.IsClicked(lastMouseState.Position))
+                        if (restartButton.IsClicked(mousePoint))
                             Restart();
                         break;
                     default:
@@ -467,13 +462,13 @@ namespace ProspectorPeril
             // Close the game application
             if (currentKeyState.IsKeyDown(Keys.Escape))
                 Exit();
-            
+
             // Up key pressed: Launch the player if they are waiting to be launched
             if (gameState == GameState.Launch && currentKeyState.IsKeyDown(Keys.Up))
-            {                
+            {
                 launcher.PlayAnimation("Launch");
                 player.PlayAnimation("Launch");
-                
+
                 player.Ascend();
                 player.Speed = 25;
                 gameState++;
@@ -496,7 +491,7 @@ namespace ProspectorPeril
                 player.Attack();
 
             #endregion
-        }        
+        }
 
         void UpdateTimer(float seconds)
         {
@@ -522,7 +517,7 @@ namespace ProspectorPeril
             }
 
             // Get current states of mouse and keyboard
-            UpdateInput(Keyboard.GetState(), Mouse.GetState());            
+            UpdateInput(Keyboard.GetState(), Mouse.GetState());
 
             TimeSpan deltaTime = gameTime.ElapsedGameTime;
             float deltaSeconds = (float)deltaTime.Milliseconds;
@@ -603,7 +598,7 @@ namespace ProspectorPeril
                 else
                     SpeedDigits[1].Visible = false;
             }
-            
+
             base.Update(gameTime);
         }
 
@@ -617,25 +612,25 @@ namespace ProspectorPeril
 
             // Begin drawing 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
-            
-            switch(gameState)
+
+            switch (gameState)
             {
                 case GameState.Splash:
-                    splashScreen.Draw(spriteBatch);                    
+                    splashScreen.Draw(spriteBatch);
                     break;
                 case GameState.Menu:
                     startScreen.Draw(spriteBatch);
                     playButton.Draw(spriteBatch);
                     break;
-                case GameState.Launch:                
+                case GameState.Launch:
                 case GameState.Running:
-                    spriteBatch.Draw(background.Textures[0], background.Position, new Rectangle(0, (int)-scrollY, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height), Color.White);                    
+                    spriteBatch.Draw(background.Textures[0], background.Position, new Rectangle(0, (int)-scrollY, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height), Color.White);
                     launcher.Draw(spriteBatch);
-                    player.Draw(spriteBatch);                    
+                    player.Draw(spriteBatch);
                     fire.Draw(spriteBatch);
-                    
+
                     foreach (var enemy in enemies)
-                        enemy.Draw(spriteBatch);                    
+                        enemy.Draw(spriteBatch);
 
                     hudContainer.Draw(spriteBatch);
 
@@ -650,7 +645,7 @@ namespace ProspectorPeril
                         hearts[i].Draw(spriteBatch);
                     }
 
-                    for (int i = 0; i < timer.Length; i++ )
+                    for (int i = 0; i < timer.Length; i++)
                     {
                         timer[i].Draw(spriteBatch);
                     }
@@ -671,9 +666,9 @@ namespace ProspectorPeril
                         hearts[i].Draw(spriteBatch);
                     }
 
-                    for (int i = 0; i < timer.Length; i++ )
+                    for (int i = 0; i < timer.Length; i++)
                         timer[i].Draw(spriteBatch);
-                    
+
                     endScreen.Draw(spriteBatch);
                     spriteBatch.Draw(timer[3].Textures[timer[3].Frame], new Vector2(310, 208), Color.White);
                     spriteBatch.Draw(timer[2].Textures[timer[2].Frame], new Vector2(335, 208), Color.White);
@@ -697,7 +692,7 @@ namespace ProspectorPeril
                     restartButton.Draw(spriteBatch);
                     break;
             }
-            
+
             // End drawing
             spriteBatch.End();
 
@@ -714,10 +709,10 @@ namespace ProspectorPeril
             player.Speed = 0;
             spawnTimer = 1000;
 
-            fire.Position.Y = hudContainer.Position.Y;            
+            fire.Position.Y = hudContainer.Position.Y;
             fire.Frame = 0;
 
-            launcher.Position = new Vector2(36.5f, 106.5f);            
+            launcher.Position = new Vector2(36.5f, 106.5f);
             launcher.Frame = 0;
 
             UpdateTimer(0);

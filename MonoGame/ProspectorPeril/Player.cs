@@ -131,7 +131,7 @@ namespace ProspectorPeril
 
             Position.Y += playerVerticalVelocity;
 
-            Speed = MathHelper.Clamp(Speed, 0, 99);
+            Speed = (int)MathHelper.Clamp(Speed, 0, 99);
             Position.X = MathHelper.Clamp(Position.X, 0 - Width / 2, 480 - Width / 2);
 
             base.Update(gameTime);
