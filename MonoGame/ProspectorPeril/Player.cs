@@ -44,7 +44,7 @@ namespace ProspectorPeril
 
         public void Ascend()
         {
-            State = PlayerState.Ascending;
+            State = PlayerState.Ascending;            
             PlayAnimation("Launch");
         }
 

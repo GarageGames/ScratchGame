@@ -374,9 +374,6 @@ namespace ProspectorPeril
             launch = Content.Load<SoundEffect>("Audio/launch_explosion");
             rockBreak = Content.Load<SoundEffect>("Audio/rock_break");
             barrelExplode = Content.Load<SoundEffect>("Audio/volatile_barrel_explosion");
-
-            currentMusicInstance.Play();
-
         }
 
         /// <summary>
@@ -397,26 +394,7 @@ namespace ProspectorPeril
         }
 
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
-        {
-            if (currentKeyState.IsKeyDown(Keys.Up))
-            {
-                TestVector.Y -= 1f;
-            }
-
-            if (currentKeyState.IsKeyDown(Keys.Down))
-            {
-                TestVector.Y += 1f;
-            }
-
-            if (currentKeyState.IsKeyDown(Keys.Left))
-            {
-                TestVector.X -= 1f;
-            }
-
-            if (currentKeyState.IsKeyDown(Keys.Right))
-            {
-                TestVector.X += 1f;
-            }
+        {            
             #region Mouse Handling
             if (currentMouseState.LeftButton == ButtonState.Pressed)
                 lastMouseState = currentMouseState;
@@ -429,13 +407,14 @@ namespace ProspectorPeril
                 {
                     case GameState.Menu:
                         if (playButton.IsClicked(mousePoint))
+                        {
                             gameState++;
 
-                        //currentMusicInstance.Stop();
-                        //currentMusicInstance = backgroundMusic.CreateInstance();
-                        //currentMusicInstance.IsLooped = true;
-                        //currentMusicInstance.Play();
-                        //gameState++;
+                            currentMusicInstance.Stop();
+                            currentMusicInstance = backgroundMusic.CreateInstance();
+                            currentMusicInstance.IsLooped = true;
+                            currentMusicInstance.Play();
+                        }
                         break;
                     case GameState.GameOver:
                         if (nextButton.IsClicked(mousePoint))
@@ -466,11 +445,11 @@ namespace ProspectorPeril
             // Up key pressed: Launch the player if they are waiting to be launched
             if (gameState == GameState.Launch && currentKeyState.IsKeyDown(Keys.Up))
             {
+                launch.Play();
+                player.Speed = 25;
                 launcher.PlayAnimation("Launch");
                 player.PlayAnimation("Launch");
-
-                player.Ascend();
-                player.Speed = 25;
+                player.Ascend();                
                 gameState++;
             }
 
@@ -513,7 +492,10 @@ namespace ProspectorPeril
                 splashTime -= gameTime.ElapsedGameTime.Milliseconds;
 
                 if (splashTime <= 0)
+                {
+                    currentMusicInstance.Play();
                     gameState++;
+                }
             }
 
             // Get current states of mouse and keyboard
@@ -552,12 +534,15 @@ namespace ProspectorPeril
                 {
                     player.Die();
                     gameState = GameState.GameOver;
+                    currentMusicInstance.Stop();
+                    death.Play();
                     endScreen.Visible = true;
                 }
 
                 if (player.Position.Y >= 424 && !player.IsAscending)
                 {
                     player.Speed -= 10;
+                    fall.Play();
                     player.Ascend();
                 }
 
@@ -730,6 +715,10 @@ namespace ProspectorPeril
                 enemy.HasSpawned = false;
                 enemy.Visible = false;
             }
+            
+            currentMusicInstance = menuMusic.CreateInstance();
+            currentMusicInstance.IsLooped = true;
+            currentMusicInstance.Play();
         }
     }
 }
