@@ -16,7 +16,6 @@ namespace ProspectorPeril
     /// </summary>
     public class Game1 : Game
     {
-        Vector2 TestVector = Vector2.Zero;
         enum GameState
         {
             Splash,
@@ -66,7 +65,8 @@ namespace ProspectorPeril
         float scrollY;
 
         Sprite[] SpeedDigits = new Sprite[2];
-        Sprite Arrow;
+        OneUp[] arrows = new OneUp[3];
+        int availableOneUp = 0;
 
         // Enemy variables
         List<Enemy> enemies = new List<Enemy>();
@@ -340,7 +340,10 @@ namespace ProspectorPeril
             CreateSpeedGui();
             CreateTimeGUI();
 
-            Arrow = new Sprite(Content.Load<Texture2D>("HUD/arrow_01"));
+            var arrowTex = Content.Load<Texture2D>("HUD/arrow_01");
+
+            for (int i = 0; i < 3; i++)
+                arrows[i] = new OneUp(arrowTex);
         }
 
         public void CreateEnvironment()
@@ -551,6 +554,9 @@ namespace ProspectorPeril
 
                 launcher.Update(gameTime);
                 player.Update(gameTime);
+                
+                foreach (var arrow in arrows)
+                    arrow.Update(gameTime);
 
                 if (player.Speed >= topSpeed)
                     topSpeed = player.Speed;
@@ -565,7 +571,16 @@ namespace ProspectorPeril
                         var result = enemies[i].Collides(player);
 
                         if (result)
+                        {
+                            arrows[availableOneUp].Play(enemies[i].Position);
+
+                            availableOneUp++;
+
+                            if (availableOneUp >= arrows.Length)
+                                availableOneUp = 0;
+
                             player.Bounce();
+                        }
                     }
                 }
 
@@ -624,6 +639,9 @@ namespace ProspectorPeril
 
                     foreach (var digit in SpeedDigits)
                         digit.Draw(spriteBatch);
+
+                    foreach (var arrow in arrows)
+                        arrow.Draw(spriteBatch);
 
                     for (int i = 0; i < hearts.Length; i++)
                     {
