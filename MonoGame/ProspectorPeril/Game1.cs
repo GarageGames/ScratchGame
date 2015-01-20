@@ -24,13 +24,15 @@ namespace ProspectorPeril
     /// </summary>
     public class Game1 : Game
     {
+        Vector2 TestVector = Vector2.Zero;
         enum GameState
         {
             Splash,
             Menu,
             Launch,
             Running,
-            GameOver
+            GameOver,
+            End
         };
 
         #region MonoGame/XNA variables
@@ -51,6 +53,9 @@ namespace ProspectorPeril
         Sprite startScreen;
         Sprite splashScreen;
         Sprite playButton;
+        Sprite nextButton;
+        Sprite scoreButton;
+        Sprite restartButton;
         float splashTime = 3000;
         #endregion
 
@@ -94,6 +99,7 @@ namespace ProspectorPeril
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            this.IsMouseVisible = true;
         }
 
         /// <summary>
@@ -308,9 +314,18 @@ namespace ProspectorPeril
  
             playButton = new Sprite(Content.Load<Texture2D>("HUD/PlayButton.png"));
 
-            var playTextureCenter = new Vector2(playButton.Textures[0].Width / 2f, playButton.Textures[0].Height / 2f);
-            playButton.Position = ViewportCenter - playTextureCenter;
-            
+            var buttonTextureCenter = new Vector2(playButton.Textures[0].Width / 2f, playButton.Textures[0].Height / 2f);
+            playButton.Position = new Vector2(ViewportCenter.X - buttonTextureCenter.X, 280 - buttonTextureCenter.Y);
+
+            nextButton = new Sprite(Content.Load<Texture2D>("Hud/NextButton.png"));
+            nextButton.Position = playButton.Position;
+
+            scoreButton = new Sprite(Content.Load<Texture2D>("Hud/ScoreButton.png"));
+            scoreButton.Position = new Vector2(175, 200);
+
+            restartButton = new Sprite(Content.Load<Texture2D>("Hud/RestartButton.png"));
+            restartButton.Position = new Vector2(175, 250);
+
             endScreen = new Sprite(Content.Load<Texture2D>("HUD/endScreenOverlay.png"));
             endScreen.Visible = false;
             
@@ -390,6 +405,25 @@ namespace ProspectorPeril
         
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
         {
+            if (currentKeyState.IsKeyDown(Keys.Up))
+            {
+                TestVector.Y -= 1f;
+            }
+
+            if (currentKeyState.IsKeyDown(Keys.Down))
+            {
+                TestVector.Y += 1f;
+            }
+
+            if (currentKeyState.IsKeyDown(Keys.Left))
+            {
+                TestVector.X -= 1f;
+            }
+
+            if (currentKeyState.IsKeyDown(Keys.Right))
+            {
+                TestVector.X += 1f;
+            }
             #region Mouse Handling
             if (currentMouseState.LeftButton == ButtonState.Pressed)
                 lastMouseState = currentMouseState;
@@ -400,17 +434,29 @@ namespace ProspectorPeril
 
                 switch (gameState)
                 {
-                    case GameState.Splash:                        
-                        gameState++;
-                        splashScreen.Visible = false;
-                        break;
                     case GameState.Menu:
-                        playButton.Visible = false;
+                        if (playButton.IsClicked(lastMouseState.Position))
+                            gameState++;                            
+                        
                         //currentMusicInstance.Stop();
                         //currentMusicInstance = backgroundMusic.CreateInstance();
                         //currentMusicInstance.IsLooped = true;
                         //currentMusicInstance.Play();
-                        gameState++;
+                        //gameState++;
+                        break;
+                    case GameState.GameOver:
+                        if (nextButton.IsClicked(lastMouseState.Position))
+                        {
+                            splashScreen.Visible = true;
+                            gameState++;
+                        }
+                        break;
+                    case GameState.End:
+                        if (scoreButton.IsClicked(lastMouseState.Position))
+                            gameState--;
+
+                        if (restartButton.IsClicked(lastMouseState.Position))
+                            Restart();
                         break;
                     default:
                         break;
@@ -459,7 +505,7 @@ namespace ProspectorPeril
             timer[0].Frame = (int)seconds % 60 % 10;
             timer[1].Frame = (int)seconds % 60 / 10;
             timer[2].Frame = (int)seconds / 60 % 10;
-            timer[2].Frame = (int)seconds / 60 / 10;
+            timer[3].Frame = (int)seconds / 60 / 10;
         }
 
         /// <summary>
@@ -583,8 +629,7 @@ namespace ProspectorPeril
                     startScreen.Draw(spriteBatch);
                     playButton.Draw(spriteBatch);
                     break;
-                case GameState.Launch:
-                case GameState.GameOver:
+                case GameState.Launch:                
                 case GameState.Running:
                     spriteBatch.Draw(background.Textures[0], background.Position, new Rectangle(0, (int)-scrollY, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height), Color.White);                    
                     launcher.Draw(spriteBatch);
@@ -611,15 +656,87 @@ namespace ProspectorPeril
                     {
                         timer[i].Draw(spriteBatch);
                     }
+                    break;
+                case GameState.GameOver:
+                    spriteBatch.Draw(background.Textures[0], background.Position, new Rectangle(0, (int)-scrollY, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height), Color.White);
+                    fire.Draw(spriteBatch);
+                    hudContainer.Draw(spriteBatch);
+
+                    foreach (var digit in SpeedDigits)
+                        digit.Draw(spriteBatch);
+
+                    for (int i = 0; i < hearts.Length; i++)
+                    {
+                        if (player.Lives <= i)
+                            hearts[i].Alpha = 0.5f;
+
+                        hearts[i].Draw(spriteBatch);
+                    }
+
+                    for (int i = 0; i < timer.Length; i++ )
+                        timer[i].Draw(spriteBatch);
                     
                     endScreen.Draw(spriteBatch);
-                    break;                
+                    spriteBatch.Draw(timer[3].Textures[timer[3].Frame], new Vector2(310, 208), Color.White);
+                    spriteBatch.Draw(timer[2].Textures[timer[2].Frame], new Vector2(335, 208), Color.White);
+                    spriteBatch.Draw(timer[1].Textures[timer[1].Frame], new Vector2(370, 208), Color.White);
+                    spriteBatch.Draw(timer[0].Textures[timer[0].Frame], new Vector2(395, 208), Color.White);
+
+                    var speedFrame = int.Parse(topSpeed.ToString().Substring(0, 1));
+                    spriteBatch.Draw(SpeedDigits[0].Textures[speedFrame], new Vector2(311, 157), Color.White);
+
+                    if (topSpeed > 9)
+                    {
+                        speedFrame = int.Parse(topSpeed.ToString().Substring(1, 1));
+                        spriteBatch.Draw(SpeedDigits[1].Textures[speedFrame], new Vector2(338, 157), Color.White);
+                    }
+
+                    nextButton.Draw(spriteBatch);
+                    break;
+                case GameState.End:
+                    splashScreen.Draw(spriteBatch);
+                    scoreButton.Draw(spriteBatch);
+                    restartButton.Draw(spriteBatch);
+                    break;
             }
-                        
+            
             // End drawing
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        void Restart()
+        {
+            // Game reset
+            gameState = GameState.Menu;
+            currentTime = 0.0f;
+            splashTime = 3000;
+            player.Lives = 3;
+            player.Speed = 0;
+            spawnTimer = 1000;
+
+            fire.Position.Y = hudContainer.Position.Y;            
+            fire.Frame = 0;
+
+            launcher.Position = new Vector2(36.5f, 106.5f);            
+            launcher.Frame = 0;
+
+            UpdateTimer(0);
+
+            // Player reset
+            player.Position = Vector2.Zero;
+            player.Position.X = ViewportCenter.X - player.SpriteCenter.X;
+            player.Position.Y = 116;
+            player.State = Player.PlayerState.Idle;
+            player.Frame = 0;
+
+            foreach (var enemy in enemies)
+            {
+                enemy.IsDamaged = false;
+                enemy.HasSpawned = false;
+                enemy.Visible = false;
+            }
         }
     }
 }

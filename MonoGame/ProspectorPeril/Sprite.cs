@@ -91,6 +91,10 @@ namespace ProspectorPeril
         /// </summary>
         public int Layer = 0;
 
+        public bool Collideable;
+
+        public BoundingSphere CollisionSphere;
+
         /// <summary>
         /// Width of the Sprite (texture width * X scale)
         /// </summary>
@@ -128,13 +132,6 @@ namespace ProspectorPeril
                 return new Vector2(Width / 2f, Height / 2f) + Position;
             }
         }
-
-        public bool Collideable
-        {
-            get;
-            set;
-        }
-        public BoundingSphere CollisionSphere;
         
         /// <summary>
         /// Default constructor
@@ -262,6 +259,19 @@ namespace ProspectorPeril
 
             if (currentTexture != null && Visible)
                 spriteBatch.Draw(currentTexture, Position, null, Color.White * Alpha, Rotation, Vector2.Zero, Scale, SpriteEffects.None, Layer);
+        }
+
+        public bool IsClicked(Point point)
+        {
+            if ((point.X >= Position.X) && point.X <= (Position.X + Width) && point.Y >= Position.Y && point.Y <= (Position.Y + Height))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
     }
 }
