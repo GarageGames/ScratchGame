@@ -507,12 +507,12 @@ namespace ProspectorPeril
             // Get current states of mouse and keyboard
             UpdateInput(Keyboard.GetState(), Mouse.GetState());
 
-            TimeSpan deltaTime = gameTime.ElapsedGameTime;
-            float deltaSeconds = (float)deltaTime.Milliseconds;
-
             // If the game is running, update the main systems
             if (gameState == GameState.Running)
             {
+                TimeSpan deltaTime = gameTime.ElapsedGameTime;
+                float deltaSeconds = (float)deltaTime.Milliseconds;
+
                 currentTime += deltaSeconds;
 
                 if (currentTime > topTime)
