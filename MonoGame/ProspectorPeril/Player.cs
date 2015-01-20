@@ -21,7 +21,9 @@ namespace ProspectorPeril
         public int Lives = 3;
 
         float playerVerticalVelocity = 0.0f;
-        float speedTimer = 2000;        
+        float speedTimer = 2000;
+        float pauseTimer = 300;
+        bool canAttack = false;
         int speedDecay = 1;
         
         public bool IsAscending
@@ -50,7 +52,7 @@ namespace ProspectorPeril
 
         public void Attack()
         {
-            if (State == PlayerState.Descending || State == PlayerState.Bounce)
+            if (canAttack)
                 State = PlayerState.Attacking;
         }
 
@@ -99,6 +101,7 @@ namespace ProspectorPeril
 
                 case PlayerState.Descending:
                     playerVerticalVelocity = 1.1f;
+                    canAttack = true;
                     Collideable = true;
                     speedTimer -= gameTime.ElapsedGameTime.Milliseconds;
 
@@ -111,6 +114,12 @@ namespace ProspectorPeril
                     break;
 
                 case PlayerState.Bounce:
+                    pauseTimer -= gameTime.ElapsedGameTime.Milliseconds;
+                    if (pauseTimer <= 0)
+                    {
+                        canAttack = true;
+                        pauseTimer = 300;
+                    }
                     playerVerticalVelocity = -3;
                     Collideable = true;
                     if (Position.Y <= 0)
@@ -122,6 +131,7 @@ namespace ProspectorPeril
                     break;
                 case PlayerState.Attacking:
                     Collideable = true;
+                    canAttack = false;
                     playerVerticalVelocity = 9;
                     break;
 
