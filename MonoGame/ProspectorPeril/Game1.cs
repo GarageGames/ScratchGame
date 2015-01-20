@@ -2,11 +2,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Storage;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Audio;
 #endregion
 
@@ -83,17 +80,18 @@ namespace ProspectorPeril
         #endregion
 
         #region Audio variables
-        //SoundEffectInstance currentMusicInstance;
-        //SoundEffect menuMusic;
-        //SoundEffect backgroundMusic;
-        //SoundEffect barrelBreak;
-        //SoundEffect cartBreak;
-        //SoundEffect death;
-        //SoundEffect fall;
-        //SoundEffect launch;
-        //SoundEffect rockBreak;
-        //SoundEffect barrelExplode;
+        SoundEffectInstance currentMusicInstance;
+        SoundEffect menuMusic;
+        SoundEffect backgroundMusic;
+        SoundEffect barrelBreak;
+        SoundEffect cartBreak;
+        SoundEffect death;
+        SoundEffect fall;
+        SoundEffect launch;
+        SoundEffect rockBreak;
+        SoundEffect barrelExplode;
         #endregion
+
         public Game1()
             : base()
         {
@@ -365,14 +363,14 @@ namespace ProspectorPeril
 
         void CreateAudio()
         {
-            /*             
-            menuMusic = Content.Load<SoundEffect>("Audio/MenuMusic");
+                         
+            menuMusic = Content.Load<SoundEffect>("Audio/MenuMusic.xnb");
             currentMusicInstance = menuMusic.CreateInstance();
             currentMusicInstance.IsLooped = true;
 
             backgroundMusic = Content.Load<SoundEffect>("Audio/BackgroundMusic");
-            instance = backgroundMusic.CreateInstance();
-            instance.IsLooped = true;
+            //instance = backgroundMusic.CreateInstance();
+            //instance.IsLooped = true;
              
             barrelBreak = Content.Load<SoundEffect>("Audio/barrel_break");
             cartBreak = Content.Load<SoundEffect>("Audio/cart_break");
@@ -383,7 +381,7 @@ namespace ProspectorPeril
             barrelExplode = Content.Load<SoundEffect>("Audio/volatile_barrel_explosion");
             
             currentMusicInstance.Play();
-            */
+            
         }
 
         /// <summary>
