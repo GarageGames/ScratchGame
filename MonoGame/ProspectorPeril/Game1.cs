@@ -194,6 +194,8 @@ namespace ProspectorPeril
             barrel.AddAnimation("Explode", new int[] { 5, 6, 7, 8, 9, 10, 11 }, 70);
             barrel.Position = barrel.SpawnPosition = new Vector2(random.Next(20, 300), 366);
             barrel.Velocity = barrel.SpawnVelocity = new Vector2(1.2f, -3.5f);
+            barrel.BreakSound = barrelBreak;
+            barrel.ExplodeSound = barrelExplode;
             return barrel;
         }
 
@@ -214,6 +216,7 @@ namespace ProspectorPeril
             var rock = new Rock(textures);
             rock.AddAnimation("Idle", new int[] { 0 }, 0);
             rock.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);
+            rock.BreakSound = rockBreak;
             return rock;
         }
 
@@ -236,7 +239,7 @@ namespace ProspectorPeril
             cart.AddAnimation("Break", new int[] { 0, 1, 2, 3, 4 }, 70);
             cart.Position = cart.SpawnPosition = new Vector2(random.Next(0, 480), 360);
             cart.Velocity = cart.SpawnVelocity = new Vector2(random.Next(1, 2), -4);
-
+            cart.BreakSound = cartBreak;
             return cart;
         }
 

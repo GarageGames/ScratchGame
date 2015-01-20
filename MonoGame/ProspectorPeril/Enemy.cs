@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace ProspectorPeril
         public bool HasSpawned;
         public Vector2 Velocity;
         public bool IsDamaged = false;
+        public SoundEffect BreakSound = null;
 
         /// <summary>
         /// Default constructor
@@ -80,6 +82,7 @@ namespace ProspectorPeril
                 EnableCollision(false);
                 PlayAnimation("Break");
                 IsDamaged = true;
+                BreakSound.Play();
             }
 
             return result;

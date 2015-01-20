@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace ProspectorPeril
         bool IsPrimed = false;
         float PrimeTimer = 1300;
         Vector2 DecayingVelocity = Vector2.Zero;
+        public SoundEffect ExplodeSound = null;
 
         /// <summary>
         /// Default constructor
@@ -73,6 +75,7 @@ namespace ProspectorPeril
             {
                 PlayAnimation("Explode");
                 player.Damage();
+                ExplodeSound.Play();
             }
 
             return collided;
