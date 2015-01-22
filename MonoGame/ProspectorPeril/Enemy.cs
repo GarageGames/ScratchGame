@@ -22,6 +22,7 @@ namespace ProspectorPeril
         /// </summary>
         public Enemy()
         {
+            Layer = 6;
             Position = new Vector2(-500, -500);
         }
 
@@ -31,6 +32,7 @@ namespace ProspectorPeril
         /// <param name="texture">A valid Texture2D this sprite will render</param>
         public Enemy(Texture2D texture) : base(texture)
         {
+            Layer = 6;
             Position = new Vector2(-500, -500);
         }
 
@@ -41,6 +43,7 @@ namespace ProspectorPeril
         public Enemy(List<Texture2D> textures)
             : base(textures)
         {
+            Layer = 6;
             Position = new Vector2(-500, -500);
         }
 

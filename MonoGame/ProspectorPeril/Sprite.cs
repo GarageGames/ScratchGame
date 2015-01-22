@@ -91,6 +91,18 @@ namespace ProspectorPeril
         /// </summary>
         public int Layer = 0;
 
+        /// <summary>
+        /// The real render depth used by the SpriteBatch::draw method. It expects a range of 0 to 1.
+        /// The 0 to 100 range of the Layer property is for usability purposes.
+        /// </summary>
+        float RenderLayer
+        {
+            get 
+            { 
+                return (float)Layer / 10f; 
+            }
+        }
+
         public bool Collideable;
 
         public BoundingSphere CollisionSphere;
@@ -258,7 +270,7 @@ namespace ProspectorPeril
             var currentTexture = Textures[Frame];
 
             if (currentTexture != null && Visible)
-                spriteBatch.Draw(currentTexture, Position, null, Color.White * Alpha, Rotation, Vector2.Zero, Scale, SpriteEffects.None, Layer);
+                spriteBatch.Draw(currentTexture, Position, null, Color.White * Alpha, Rotation, Vector2.Zero, Scale, SpriteEffects.None, RenderLayer);
         }
 
         public bool IsClicked(Point point)

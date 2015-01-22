@@ -27,10 +27,19 @@ namespace ProspectorPeril
         };
 
         #region MonoGame/XNA variables
+        
+        // Handles the configuration and management of the graphics device.
         GraphicsDeviceManager graphics;
+
+        // Main drawing object. Enables a group of sprites to be drawn using the same settings.
         SpriteBatch spriteBatch;
+
+        // The graphics device render target to receive draw calls. 
         Viewport GraphicsViewport;
+
+        // The middle position of the viewport
         Vector2 ViewportCenter;
+        
         MouseState lastMouseState;
         Random random = new Random();
         #endregion
@@ -61,8 +70,13 @@ namespace ProspectorPeril
         Sprite hudContainer;
         Sprite[] hearts = new Sprite[3];
         Sprite[] timer = new Sprite[4];
-        float scrollRate = 0.25f;
-        float scrollY;
+        
+
+        // The rate at which the background image is scrolled per ms
+        float backgroundScrollSpeed = 0.25f;
+
+        // The current background scroll value (updated each frame)
+        float currentBackgroundScroll;
 
         Sprite[] SpeedDigits = new Sprite[2];
         OneUp[] arrows = new OneUp[3];
@@ -129,8 +143,7 @@ namespace ProspectorPeril
             foreach (var textureString in playerTextures)
                 textures.Add(Content.Load<Texture2D>(textureString));
 
-            player = new Player(textures);
-
+            player = new Player(textures);            
             player.AddAnimation("Idle", new int[] { 0 }, 0);
             player.AddAnimation("Launch", new int[] { 1, 2 }, 100);
             player.AddAnimation("Float", new int[] { 3 }, 0);
@@ -160,7 +173,7 @@ namespace ProspectorPeril
                 textures.Add(Content.Load<Texture2D>(textureString));
 
             launcher = new Launcher(textures);
-            launcher.Scale = new Vector2(0.75f, 0.75f);
+            launcher.Scale = new Vector2(0.75f, 0.75f);            
             launcher.Position = new Vector2(36.5f, 106.5f);
             launcher.AddAnimation("Idle", new int[] { 0 }, 0);
             launcher.AddAnimation("Launch", new int[] { 0, 1, 2, 3, 4, 5, 6 }, 100);
@@ -274,8 +287,10 @@ namespace ProspectorPeril
             for (int i = 0; i < 10; i++)
                 speedTextures.Add(Content.Load<Texture2D>("HUD/number_" + i));
 
-            SpeedDigits[0] = new Sprite(speedTextures);
+            SpeedDigits[0] = new Sprite(speedTextures);            
             SpeedDigits[1] = new Sprite(speedTextures);
+
+            SpeedDigits[0].Layer = SpeedDigits[1].Layer = 3;
 
             SpeedDigits[0].Frame = SpeedDigits[1].Frame = 0;
 
@@ -292,12 +307,13 @@ namespace ProspectorPeril
                 timeTextures.Add(Content.Load<Texture2D>("HUD/number_" + i + "b"));
 
             for (int i = 0; i < 4; i++)
+            {
                 timer[i] = new Sprite(timeTextures);
-
-            timer[0].Frame = timer[1].Frame = timer[2].Frame = timer[3].Frame = 0;
-
-            timer[0].Position.Y = timer[1].Position.Y = timer[2].Position.Y = timer[3].Position.Y = hudContainer.Position.Y;
-
+                timer[i].Layer = 3;
+                timer[i].Frame = 0;
+                timer[i].Position.Y = hudContainer.Position.Y;
+            }
+            
             timer[0].Position.X = 448;
             timer[1].Position.X = timer[0].Position.X - 25;
             timer[2].Position.X = timer[0].Position.X - 60;
@@ -307,34 +323,43 @@ namespace ProspectorPeril
         void CreateInterface()
         {
             splashScreen = new Sprite(Content.Load<Texture2D>("HUD/splashPage"));
+            splashScreen.Layer = 1;
 
             playButton = new Sprite(Content.Load<Texture2D>("HUD/PlayButton"));
+            playButton.Layer = 0;
 
             var buttonTextureCenter = new Vector2(playButton.Textures[0].Width / 2f, playButton.Textures[0].Height / 2f);
             playButton.Position = new Vector2(ViewportCenter.X - buttonTextureCenter.X, 280 - buttonTextureCenter.Y);
 
             nextButton = new Sprite(Content.Load<Texture2D>("Hud/NextButton"));
             nextButton.Position = playButton.Position;
+            nextButton.Layer = 0;
 
             scoreButton = new Sprite(Content.Load<Texture2D>("Hud/ScoreButton"));
             scoreButton.Position = new Vector2(175, 200);
+            scoreButton.Layer = 0;
 
             restartButton = new Sprite(Content.Load<Texture2D>("Hud/RestartButton"));
             restartButton.Position = new Vector2(175, 250);
+            restartButton.Layer = 0;
 
             endScreen = new Sprite(Content.Load<Texture2D>("HUD/endScreenOverlay"));
             endScreen.Visible = false;
+            endScreen.Layer = 2;
 
             startScreen = new Sprite(Content.Load<Texture2D>("HUD/startScreen"));
+            startScreen.Layer = 3;
 
             hudContainer = new Sprite(Content.Load<Texture2D>("HUD/HUD"));
             hudContainer.Position.Y = 360 - hudContainer.Textures[0].Height;
+            hudContainer.Layer = 4;
 
             for (int i = 0; i < 3; i++)
             {
                 hearts[i] = new Sprite(Content.Load<Texture2D>("HUD/heart"));
                 hearts[i].Position.Y = hudContainer.Position.Y;
                 hearts[i].Position.X = 480 / 1.5f - hearts[i].Textures[0].Width * (i + 1);
+                hearts[i].Layer = 3;
             }
 
             CreateSpeedGui();
@@ -350,6 +375,7 @@ namespace ProspectorPeril
         {
             var backgroundTex = Content.Load<Texture2D>("BG/Background");
             background = new Sprite(backgroundTex);
+            background.Layer = 8;
 
             List<Texture2D> fireTextures = new List<Texture2D>();
 
@@ -357,6 +383,7 @@ namespace ProspectorPeril
                 fireTextures.Add(Content.Load<Texture2D>("wallOfFire/wallOfFire_" + i));
 
             fire = new Explosion(fireTextures);
+            fire.Layer = 5;
             fire.AddAnimation("Idle", new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, 100, true);
             fire.Position.Y = hudContainer.Position.Y;
             fire.PlayAnimation("Idle");
@@ -454,6 +481,8 @@ namespace ProspectorPeril
                 launch.Play();
                 player.Speed = 25;
                 launcher.PlayAnimation("Launch");
+                
+
                 player.PlayAnimation("Launch");
                 player.Ascend();                
                 gameState++;
@@ -589,7 +618,8 @@ namespace ProspectorPeril
                 else
                     fire.IsRising = false;
 
-                scrollY += scrollRate * deltaSeconds;
+                // Increase the background image scroll value. This does NOT update position in the game. It updates the image itself
+                currentBackgroundScroll += backgroundScrollSpeed * deltaSeconds;
 
                 SpeedDigits[0].Frame = int.Parse(player.Speed.ToString().Substring(0, 1));
 
@@ -613,8 +643,8 @@ namespace ProspectorPeril
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // Begin drawing 
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
+            // Begin drawing. The SamplerState.LinearWrap is an option that allows an image to be wrapped when its UVs are moved
+            spriteBatch.Begin(SpriteSortMode.BackToFront, null, SamplerState.LinearWrap, null, null);
 
             switch (gameState)
             {
@@ -627,7 +657,15 @@ namespace ProspectorPeril
                     break;
                 case GameState.Launch:
                 case GameState.Running:
-                    spriteBatch.Draw(background.Textures[0], background.Position, new Rectangle(0, (int)-scrollY, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height), Color.White);
+
+                    // Draw the scrolling background
+                    // background.Textures[0] - The background image itself
+                    // background.Position - The position in the game to draw.
+                    // sourceRect - A rectangle that specifies (in texels) the source texels from a texture. Use null to draw the entire texture.
+                    //            - The currentBackgroundScroll value is what makes the image move, in this case, vertically up
+                    var sourceRect = new Rectangle(0, (int)-currentBackgroundScroll, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height);
+                    spriteBatch.Draw(background.Textures[0], background.Position, sourceRect, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, (float)background.Layer / 10f);
+                    
                     launcher.Draw(spriteBatch);
                     player.Draw(spriteBatch);
                     fire.Draw(spriteBatch);
@@ -657,7 +695,8 @@ namespace ProspectorPeril
                     }
                     break;
                 case GameState.GameOver:
-                    spriteBatch.Draw(background.Textures[0], background.Position, new Rectangle(0, (int)-scrollY, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height), Color.White);
+                    sourceRect = new Rectangle(0, (int)-currentBackgroundScroll, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height);
+                    spriteBatch.Draw(background.Textures[0], background.Position, sourceRect, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, (float)background.Layer / 10f);
                     fire.Draw(spriteBatch);
                     hudContainer.Draw(spriteBatch);
 
@@ -676,18 +715,18 @@ namespace ProspectorPeril
                         timer[i].Draw(spriteBatch);
 
                     endScreen.Draw(spriteBatch);
-                    spriteBatch.Draw(timer[3].Textures[timer[3].Frame], new Vector2(310, 208), Color.White);
-                    spriteBatch.Draw(timer[2].Textures[timer[2].Frame], new Vector2(335, 208), Color.White);
-                    spriteBatch.Draw(timer[1].Textures[timer[1].Frame], new Vector2(370, 208), Color.White);
-                    spriteBatch.Draw(timer[0].Textures[timer[0].Frame], new Vector2(395, 208), Color.White);
+                    spriteBatch.Draw(timer[3].Textures[timer[3].Frame], new Vector2(310, 208), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+                    spriteBatch.Draw(timer[2].Textures[timer[2].Frame], new Vector2(335, 208), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+                    spriteBatch.Draw(timer[1].Textures[timer[1].Frame], new Vector2(370, 208), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+                    spriteBatch.Draw(timer[0].Textures[timer[0].Frame], new Vector2(395, 208), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
 
                     var speedFrame = int.Parse(topSpeed.ToString().Substring(0, 1));
-                    spriteBatch.Draw(SpeedDigits[0].Textures[speedFrame], new Vector2(311, 157), Color.White);
+                    spriteBatch.Draw(SpeedDigits[0].Textures[speedFrame], new Vector2(311, 157), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
 
                     if (topSpeed > 9)
                     {
                         speedFrame = int.Parse(topSpeed.ToString().Substring(1, 1));
-                        spriteBatch.Draw(SpeedDigits[1].Textures[speedFrame], new Vector2(338, 157), Color.White);
+                        spriteBatch.Draw(SpeedDigits[1].Textures[speedFrame], new Vector2(338, 157), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                     }
 
                     nextButton.Draw(spriteBatch);

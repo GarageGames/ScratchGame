@@ -15,6 +15,7 @@ namespace ProspectorPeril
         /// </summary>
         public OneUp() : base()
         {
+            Layer = 5;
             Visible = false;
         }
 
@@ -24,6 +25,7 @@ namespace ProspectorPeril
         /// <param name="texture">A valid Texture2D this sprite will render</param>
         public OneUp(Texture2D texture) : base(texture)
         {
+            Layer = 5;
             Visible = false;
         }
 
@@ -34,6 +36,7 @@ namespace ProspectorPeril
         public OneUp(List<Texture2D> textures)
             : base(textures)
         {
+            Layer = 5;
             Visible = false;
         }
         

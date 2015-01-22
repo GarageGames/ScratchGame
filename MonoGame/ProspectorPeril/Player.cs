@@ -66,19 +66,28 @@ namespace ProspectorPeril
         /// <summary>
         /// Default constructor
         /// </summary>
-        public Player() { }
+        public Player() 
+        {
+            Layer = 6;
+        }
 
         /// <summary>
         /// Constructor used when a sprite only uses a single texture
         /// </summary>
         /// <param name="texture">A valid Texture2D this sprite will render</param>
-        public Player(Texture2D texture) : base(texture) {}
+        public Player(Texture2D texture) : base(texture) 
+        {
+            Layer = 6;
+        }
 
         /// <summary>
         /// Constructor used when a sprite uses multiple textures
         /// </summary>
         /// <param name="textures">Generic list of Texture2D objects</param>
-        public Player(List<Texture2D> textures) : base(textures) {}
+        public Player(List<Texture2D> textures) : base(textures)
+        {
+            Layer = 6;
+        }
 
         public override void Update(GameTime gameTime)
         {            
