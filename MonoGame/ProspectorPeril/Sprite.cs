@@ -10,13 +10,28 @@ namespace ProspectorPeril
     /// </summary>
     public class Sprite
     {
+        // Helper class for holding animation data
         public class Animation
         {
+            // Name of the animation
             public string Name;
+
+            // Array of frame numbers (indexes into Sprite::Textures
             public int[] Frames;
+
+            // Time in between each frame of animation
             public float TimePerFrame;
+
+            // Whether it should loop back to the beginning and start playing again
             public bool Looping;            
 
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            /// <param name="name"></param>
+            /// <param name="frames"></param>
+            /// <param name="timePerFrame"></param>
+            /// <param name="looping"></param>
             public Animation(string name, int[] frames, float timePerFrame, bool looping)
             {
                 Name = name;
@@ -79,7 +94,7 @@ namespace ProspectorPeril
         /// <summary>
         /// The index used to increment through the array of animation frames
         /// </summary>
-        int CurrentAnimFrame = -1;
+        int CurrentAnimFrame = 0;
 
         /// <summary>
         /// The current animation being played
@@ -103,8 +118,14 @@ namespace ProspectorPeril
             }
         }
 
+        /// <summary>
+        /// Whether the Sprite can be collided with or not
+        /// </summary>
         public bool Collideable;
 
+        /// <summary>
+        /// Basic Collision Sphere object
+        /// </summary>
         public BoundingSphere CollisionSphere;
 
         /// <summary>
@@ -153,6 +174,10 @@ namespace ProspectorPeril
 
         }
 
+        /// <summary>
+        /// Turn on collision for this Sprite and update its collision sphere
+        /// </summary>
+        /// <param name="shouldEnable"></param>
         public void EnableCollision(bool shouldEnable = true)
         {
             Collideable = shouldEnable;
@@ -267,23 +292,18 @@ namespace ProspectorPeril
         /// <param name="spriteBatch">A valid SpriteBatch that does all the drawing for the game</param>
         public void Draw(SpriteBatch spriteBatch)
         {
-            var currentTexture = Textures[Frame];
-
-            if (currentTexture != null && Visible)
-                spriteBatch.Draw(currentTexture, Position, null, Color.White * Alpha, Rotation, Vector2.Zero, Scale, SpriteEffects.None, RenderLayer);
+            if (Textures[Frame] != null && Visible)
+                spriteBatch.Draw(Textures[Frame], Position, null, Color.White * Alpha, Rotation, Vector2.Zero, Scale, SpriteEffects.None, RenderLayer);
         }
 
+        /// <summary>
+        /// Check to see if the Sprite was clicked
+        /// </summary>
+        /// <param name="point">Point from the current mouse state</param>
+        /// <returns></returns>
         public bool IsClicked(Point point)
         {
-            if ((point.X >= Position.X) && point.X <= (Position.X + Width) && point.Y >= Position.Y && point.Y <= (Position.Y + Height))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
+            return ((point.X >= Position.X) && point.X <= (Position.X + Width) && point.Y >= Position.Y && point.Y <= (Position.Y + Height));
         }
     }
 }
