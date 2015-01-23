@@ -12,6 +12,7 @@ namespace ProspectorPeril
         /// </summary>
         public Rock() : base()
         {
+            SpawnTimeRemaining = SpawnTiming = 5750;
         }
 
         /// <summary>
@@ -20,6 +21,7 @@ namespace ProspectorPeril
         /// <param name="texture">A valid Texture2D this sprite will render</param>
         public Rock(Texture2D texture) : base(texture)
         {
+            SpawnTimeRemaining = SpawnTiming = 5750;
         }
 
         /// <summary>
@@ -28,6 +30,7 @@ namespace ProspectorPeril
         /// <param name="textures">Generic list of Texture2D objects</param>
         public Rock(List<Texture2D> textures) : base(textures)
         {
+            SpawnTimeRemaining = SpawnTiming = 5750;
         }
 
         /// <summary>

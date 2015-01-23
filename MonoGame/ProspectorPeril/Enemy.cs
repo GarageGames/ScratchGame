@@ -31,6 +31,13 @@ namespace ProspectorPeril
         public SoundEffect BreakSound = null;
 
         /// <summary>
+        /// Time between spawns
+        /// </summary>
+        public float SpawnTiming = 0.0f;
+
+        public float SpawnTimeRemaining = 0.0f;
+
+        /// <summary>
         /// Default constructor
         /// </summary>
         public Enemy()
@@ -87,6 +94,7 @@ namespace ProspectorPeril
             Position = position;
             Velocity = velocity;
             IsDamaged = false;
+            SpawnTimeRemaining = SpawnTiming;
 
             EnableCollision();
             UpdateCollision();

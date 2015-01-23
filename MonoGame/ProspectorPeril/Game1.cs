@@ -80,13 +80,14 @@ namespace ProspectorPeril
         Player player;        
 
         // List of all eneemies to track, draw, update, etc
-        List<Enemy> enemies = new List<Enemy>();
-
-        // Time between enemy spawns (in ms)
-        float spawnTimer = 1000;
-
+        List<Enemy> rocks = new List<Enemy>();
+        List<Enemy> carts = new List<Enemy>();
+        List<Enemy> barrels = new List<Enemy>();
+        
         // Current enemy index in enemies list
-        int enemyIndex = 0;
+        int cartIndex = 0;
+        int rockIndex = 0;
+        int barrelIndex = 0;
 
         // Fastest speed player has gotten
         int topSpeed = 0;
@@ -327,20 +328,20 @@ namespace ProspectorPeril
         /// </summary>
         void CreateEnemies()
         {
-            // Rock, barrel, cart
-            enemies.Add(CreateRock());
-            enemies.Add(CreateBarrel());
-            enemies.Add(CreateCart());
+            // Create carts
+            carts.Add(CreateCart());
+            carts.Add(CreateCart());
+            carts.Add(CreateCart());
 
-            // Barrel, cart, rock
-            enemies.Add(CreateBarrel());
-            enemies.Add(CreateCart());            
-            enemies.Add(CreateRock());
+            // Create rocks
+            rocks.Add(CreateRock());
+            rocks.Add(CreateRock());
+            rocks.Add(CreateRock());
 
-            // Rock, cart, barrel
-            enemies.Add(CreateRock());
-            enemies.Add(CreateCart());
-            enemies.Add(CreateBarrel());
+            // Create barrels
+            barrels.Add(CreateBarrel());
+            barrels.Add(CreateBarrel());
+            barrels.Add(CreateBarrel());
         }
 
         /// <summary>
@@ -647,6 +648,99 @@ namespace ProspectorPeril
             timer[3].Frame = (int)seconds / 60 / 10;
         }
 
+        void UpdateEnemy(List<Enemy> enemies, int enemyIndex, GameTime gameTime)
+        {
+            // If there is time remaining before spawn
+            if (enemies[enemyIndex].SpawnTimeRemaining > 0)
+            {
+                // Reduce the time remaining before spawning
+                enemies[enemyIndex].SpawnTimeRemaining -= gameTime.ElapsedGameTime.Milliseconds;
+            }
+            else
+            {
+                // Time to spawn an enemy. Reset the timer
+                enemies[enemyIndex].SpawnTimeRemaining = enemies[enemyIndex].SpawnTiming;
+
+                // Check to see if the current enemy has not spawned yet
+                if (!enemies[enemyIndex].HasSpawned)
+                {
+                    var position = Vector2.Zero;
+                    var velocity = Vector2.Zero;
+
+                    var enemyType = enemies[enemyIndex].GetType();
+
+                    // Spawn position and velocity based on Enemy type
+                    if (enemyType == typeof(Rock))
+                    {
+                        // Generate a random double between 0.0 and 1.0. Greater than 0.5, spawn rock on right
+                        if (random.NextDouble() > 0.5)
+                        {
+                            // Start outside of the right view, move to the left
+                            position = new Vector2(480, random.Next(-15, -5));
+                            velocity = new Vector2(random.Next(-3, -2), random.Next(2, 3));
+                        }
+                        else
+                        {
+                            // Start outside of the left view, move to the right
+                            position = new Vector2(-100, random.Next(-15, -5));
+                            velocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
+                        }
+                    }
+                    else if (enemyType == typeof(Barrel))
+                    {
+                        position = new Vector2(random.Next(20, 300), 360);
+                        velocity = new Vector2(1.2f, -3.5f);
+                    }
+                    else if (enemyType == typeof(Cart))
+                    {
+                        position = new Vector2(random.Next(0, 480), 360);
+                        velocity = new Vector2(random.Next(1, 2), -4);
+                    }
+
+                    enemies[enemyIndex].Spawn(position, velocity);
+                    enemies[enemyIndex].Rotation = (float)random.NextDouble();
+                }
+
+                // Increase enemy index to the next slot
+                enemyIndex++;
+
+                // If the enemy index is greater than the number of we have created, reset to zero
+                if (enemyIndex >= enemies.Count)
+                    enemyIndex = 0;
+            }
+
+            // Update the enemy
+            enemies[enemyIndex].Update(gameTime);
+
+            // If it has spawned and can collide... 
+            if (enemies[enemyIndex].HasSpawned && enemies[enemyIndex].Collideable)
+            {
+                // ...check for collision against the player
+                if (enemies[enemyIndex].Collides(player))
+                {
+                    // Enemy hit, show the oneup arrow
+                    arrows[availableOneUp].Play(enemies[enemyIndex].Position);
+                    availableOneUp++;
+
+                    if (availableOneUp >= arrows.Length)
+                        availableOneUp = 0;
+
+                    // Bounce the player
+                    player.Bounce();
+                }
+            }
+        }
+
+        void UpdateRocks(float elapsedMilliseconds)
+        {
+
+        }
+
+        void UpdateBarrels(float elapsedMilliseconds)
+        {
+
+        }
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -686,66 +780,6 @@ namespace ProspectorPeril
 
                 // Update the timer interface
                 UpdateTimer(currentTime / 1000);
-
-                // If there is time remaining before spawn
-                if (spawnTimer > 0)
-                {
-                    // Reduce the time remaining before spawning
-                    spawnTimer -= gameTime.ElapsedGameTime.Milliseconds;
-                }
-                else
-                {
-                    // Time to spawn an enemy. Reset the timer
-                    spawnTimer = 1000;
-
-                    // Check to see if the current enemy has not spawned yet
-                    if (!enemies[enemyIndex].HasSpawned)
-                    {
-                        // Get the enemy type
-                        var enemyType = enemies[enemyIndex].GetType();
-
-                        var position = Vector2.Zero;
-                        var velocity = Vector2.Zero;
-
-                        // Spawn position and velocity based on Enemy type
-                        if (enemyType == typeof(Rock))
-                        {
-                            // Generate a random double between 0.0 and 1.0. Greater than 0.5, spawn rock on right
-                            if (random.NextDouble() > 0.5)
-                            {
-                                // Start outside of the right view, move to the left
-                                position = new Vector2(480, random.Next(-15, -5));
-                                velocity = new Vector2(random.Next(-3, -2), random.Next(2, 3));
-                            }
-                            else
-                            {
-                                // Start outside of the left view, move to the right
-                                position = new Vector2(-100, random.Next(-15, -5));
-                                velocity = new Vector2(random.Next(2, 3), random.Next(2, 3));
-                            }
-                        }
-                        else if (enemyType == typeof(Barrel))
-                        {
-                            position = new Vector2(random.Next(20, 300), 360);
-                            velocity = new Vector2(1.2f, -3.5f);
-                        }
-                        else if (enemyType == typeof(Cart))
-                        {
-                            position = new Vector2(random.Next(0, 480), 360);
-                            velocity = new Vector2(random.Next(1, 2), -4);
-                        }
-                        
-                        enemies[enemyIndex].Spawn(position, velocity);
-                        enemies[enemyIndex].Rotation = (float)random.NextDouble();
-                    }
-
-                    // Increase enemy index to the next slot
-                    enemyIndex++;
-
-                    // If the enemy index is greater than the number of we have created, reset to zero
-                    if (enemyIndex >= enemies.Count)
-                        enemyIndex = 0;
-                }                
 
                 // If the player below the fire, the game is over
                 if ((player.Position.Y >= explosion.Position.Y && explosion.Position.Y <= 122 && explosion.Visible) || player.Lives <= 0)
@@ -794,30 +828,9 @@ namespace ProspectorPeril
                 // Update the explosion
                 explosion.Update(gameTime);
 
-                // Iterate through the enemy list
-                foreach(var enemy in enemies)
-                {
-                    // Update the enemy
-                    enemy.Update(gameTime);
-
-                    // If it has spawned and can collide... 
-                    if (enemy.HasSpawned && enemy.Collideable)
-                    {
-                        // ...check for collision against the player
-                        if (enemy.Collides(player))
-                        {
-                            // Enemy hit, show the oneup arrow
-                            arrows[availableOneUp].Play(enemy.Position);
-                            availableOneUp++;
-
-                            if (availableOneUp >= arrows.Length)
-                                availableOneUp = 0;
-
-                            // Bounce the player
-                            player.Bounce();
-                        }
-                    }
-                }
+                UpdateEnemy(rocks, rockIndex, gameTime);
+                UpdateEnemy(barrels, barrelIndex, gameTime);
+                UpdateEnemy(carts, cartIndex, gameTime);                
 
                 // If the player isn't moving fast enough (10), start moving the explosion
                 if (player.Speed < 10)
@@ -879,8 +892,14 @@ namespace ProspectorPeril
                     player.Draw(spriteBatch);
                     explosion.Draw(spriteBatch);
 
-                    foreach (var enemy in enemies)
-                        enemy.Draw(spriteBatch);
+                    foreach (var cart in carts)
+                        cart.Draw(spriteBatch);
+
+                    foreach (var barrel in barrels)
+                        barrel.Draw(spriteBatch);
+
+                    foreach (var rock in rocks)
+                        rock.Draw(spriteBatch);
 
                     hudContainer.Draw(spriteBatch);
 
@@ -979,7 +998,6 @@ namespace ProspectorPeril
             splashTime = 3000;
             player.Lives = 3;
             player.Speed = 0;
-            spawnTimer = 1000;
 
             explosion.Position.Y = hudContainer.Position.Y;
             explosion.Frame = 0;
@@ -998,11 +1016,25 @@ namespace ProspectorPeril
             #endregion
 
             #region Enemy Reset
-            foreach (var enemy in enemies)
+            foreach (var barrel in barrels)
             {
-                enemy.IsDamaged = false;
-                enemy.HasSpawned = false;
-                enemy.Visible = false;
+                barrel.IsDamaged = false;
+                barrel.HasSpawned = false;
+                barrel.Visible = false;
+            }
+
+            foreach (var cart in carts)
+            {
+                cart.IsDamaged = false;
+                cart.HasSpawned = false;
+                cart.Visible = false;
+            }
+
+            foreach (var rock in rocks)
+            {
+                rock.IsDamaged = false;
+                rock.HasSpawned = false;
+                rock.Visible = false;
             }
             #endregion
 

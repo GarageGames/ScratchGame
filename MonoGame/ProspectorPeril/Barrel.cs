@@ -27,7 +27,8 @@ namespace ProspectorPeril
         /// Default constructor
         /// </summary>
         public Barrel() : base()
-        {            
+        {
+            SpawnTimeRemaining = SpawnTiming = 3500;
         }
 
         /// <summary>
@@ -35,7 +36,8 @@ namespace ProspectorPeril
         /// </summary>
         /// <param name="texture">A valid Texture2D this sprite will render</param>
         public Barrel(Texture2D texture) : base(texture)
-        {            
+        {
+            SpawnTimeRemaining = SpawnTiming = 3500;
         }
 
         /// <summary>
@@ -44,7 +46,8 @@ namespace ProspectorPeril
         /// <param name="textures">Generic list of Texture2D objects</param>
         public Barrel(List<Texture2D> textures)
             : base(textures)
-        {            
+        {
+            SpawnTimeRemaining = SpawnTiming = 3500;
         }
         
         public override void Update(GameTime gameTime)
