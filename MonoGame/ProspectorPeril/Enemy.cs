@@ -10,11 +10,9 @@ namespace ProspectorPeril
 {    
     public class Enemy : Sprite
     {
-        public Vector2 SpawnPosition;
-        public Vector2 SpawnVelocity;
         public bool HasSpawned;
-        public Vector2 Velocity;
-        public bool IsDamaged = false;
+        public bool IsDamaged = false; 
+        public Vector2 Velocity;        
         public SoundEffect BreakSound = null;
 
         /// <summary>
@@ -50,26 +48,22 @@ namespace ProspectorPeril
         public override void Update(GameTime gameTime)
         {
             if (Position.X < -200 || Position.X > 500 || Position.Y > 400)
-            {                
                 HasSpawned = false;
-                Position = SpawnPosition;                
-                Velocity = SpawnVelocity;
-            }
-
+            
             base.Update(gameTime);
         }
 
-        virtual public void Spawn()
+        virtual public void Spawn(Vector2 position, Vector2 velocity)
         {
             Frame = 0;
             HasSpawned = true;
             Visible = true;
-            Position = SpawnPosition;
-            Velocity = SpawnVelocity;
+            Position = position;
+            Velocity = velocity;
             IsDamaged = false;
 
             EnableCollision();
-            UpdateCollision();            
+            UpdateCollision();
         }
 
         virtual public bool Collides(Sprite sprite)

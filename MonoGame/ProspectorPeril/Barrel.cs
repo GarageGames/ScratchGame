@@ -81,12 +81,13 @@ namespace ProspectorPeril
             return collided;
         }
 
-        public override void Spawn()
+        public override void Spawn(Vector2 position, Vector2 velocity)
         {
+            base.Spawn(position, velocity);
+
             DecayingVelocity = Velocity;
             IsPrimed = false;
             PrimeTimer = 2000;
-            base.Spawn();
         }
 
         public override void OnAnimationEnd()

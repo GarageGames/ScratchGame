@@ -9,17 +9,14 @@ namespace ProspectorPeril
     {
         public Rock() : base()
         {
-            Visible = false;
         }
 
         public Rock(Texture2D texture) : base(texture)
         {
-            Visible = false;
         }
 
         public Rock(List<Texture2D> textures) : base(textures)
         {
-            Visible = false;
         }
 
         public override void Update(GameTime gameTime)

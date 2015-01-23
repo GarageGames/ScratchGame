@@ -22,10 +22,10 @@ namespace ProspectorPeril
         {            
         }
 
-        public override void Spawn()
+        public override void Spawn(Vector2 position, Vector2 velocity)
         {
-            DecayingVelocity = Velocity;
-            base.Spawn();
+            base.Spawn(position, velocity);
+            DecayingVelocity = Velocity;            
         }
 
         public override void Update(GameTime gameTime)
