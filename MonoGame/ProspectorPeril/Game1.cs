@@ -890,13 +890,22 @@ namespace ProspectorPeril
                     foreach (var arrow in arrows)
                         arrow.Draw(spriteBatch);
 
-                    for (var i = 0; i < hearts.Length; i++)
-                    {
-                        if (player.Lives <= i)
-                            hearts[i].Alpha = 0.5f;
+                    hearts[0].Alpha = (player.Lives < 3) ? 0.5f : 1.0f;
+                    hearts[0].Draw(spriteBatch);
 
-                        hearts[i].Draw(spriteBatch);
-                    }
+                    hearts[1].Alpha = (player.Lives < 2) ? 0.5f : 1.0f;
+                    hearts[1].Draw(spriteBatch);
+
+                    hearts[2].Alpha = (player.Lives < 1) ? 0.5f : 1.0f;
+                    hearts[2].Draw(spriteBatch);
+
+                    //for (var i = 0; i < hearts.Length; i++)
+                    //{
+                    //    if (player.Lives <= i)
+                    //        hearts[i].Alpha = 0.5f;
+
+                    //    hearts[i].Draw(spriteBatch);
+                    //}
 
                     foreach (var timeDigit in timer)
                         timeDigit.Draw(spriteBatch);
