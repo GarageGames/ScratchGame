@@ -6,6 +6,9 @@ namespace ProspectorPeril
 {
     class Player : Sprite
     {
+        /// <summary>
+        /// Different states the player can be in
+        /// </summary>
         public enum PlayerState
         {
             Idle,
