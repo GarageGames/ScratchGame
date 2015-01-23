@@ -7,35 +7,57 @@ namespace ProspectorPeril
 {
     class Cart : Enemy
     {
-        Vector2 DecayingVelocity = Vector2.Zero;
-
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public Cart() : base()
         {            
         }
 
+        /// <summary>
+        /// Constructor used when a Cart only uses a single texture
+        /// </summary>
+        /// <param name="texture">A valid Texture2D this sprite will render</param>
         public Cart(Texture2D texture) : base(texture)
         {
         }
 
+        /// <summary>
+        /// Constructor used when a Cart uses multiple textures
+        /// </summary>
+        /// <param name="textures">Generic list of Texture2D objects</param>
         public Cart(List<Texture2D> textures)
             : base(textures)
         {            
         }
 
+        /// <summary>
+        /// Spawn the Cart
+        /// </summary>
+        /// <param name="position">Starting position</param>
+        /// <param name="velocity">Starting velocity</param>
         public override void Spawn(Vector2 position, Vector2 velocity)
         {
-            base.Spawn(position, velocity);
-            DecayingVelocity = Velocity;            
+            base.Spawn(position, velocity);            
         }
 
+        /// <summary>
+        /// Update the Cart
+        /// </summary>
+        /// <param name="gameTime">Current game time</param>
         public override void Update(GameTime gameTime)
         {
+            // If it has spawned
             if (HasSpawned)
             {
-                Position += DecayingVelocity;
-                DecayingVelocity.Y += 0.03f;
+                // Update it's position based on the decaying velocity
+                Position += Velocity;
+
+                // Changed velocity to make the object start dropping
+                Velocity.Y += 0.03f;
             }
 
+            // Enemy Update routine
             base.Update(gameTime);
         }
     }

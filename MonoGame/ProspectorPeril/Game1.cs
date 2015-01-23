@@ -138,8 +138,7 @@ namespace ProspectorPeril
         /// <summary>
         /// Main game constructor
         /// </summary>
-        public Game1()
-            : base()
+        public Game1() : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -841,11 +840,13 @@ namespace ProspectorPeril
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            // Clear to black
             GraphicsDevice.Clear(Color.Black);
 
             // Begin drawing. The SamplerState.LinearWrap is an option that allows an image to be wrapped when its UVs are moved
             spriteBatch.Begin(SpriteSortMode.BackToFront, null, SamplerState.LinearWrap, null, null);
 
+            // Draw certain objects based on game state
             switch (gameState)
             {
                 case GameState.Splash:
@@ -889,14 +890,19 @@ namespace ProspectorPeril
                         hearts[i].Draw(spriteBatch);
                     }
 
-                    for (var i = 0; i < timer.Length; i++)
-                    {
-                        timer[i].Draw(spriteBatch);
-                    }
+                    foreach (var timeDigit in timer)
+                        timeDigit.Draw(spriteBatch);
+                    
                     break;
                 case GameState.GameOver:
+                    // Draw the scrolling background
+                    // background.Textures[0] - The background image itself
+                    // background.Position - The position in the game to draw.
+                    // sourceRect - A rectangle that specifies (in texels) the source texels from a texture. Use null to draw the entire texture.
+                    //            - The currentBackgroundScroll value is what makes the image move, in this case, vertically up
                     sourceRect = new Rectangle(0, (int)-currentBackgroundScroll, background.Textures[0].Bounds.Width, background.Textures[0].Bounds.Height);
                     spriteBatch.Draw(background.Textures[0], background.Position, sourceRect, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, (float)background.Layer / 10f);
+
                     explosion.Draw(spriteBatch);
                     hudContainer.Draw(spriteBatch);
 
@@ -911,10 +917,11 @@ namespace ProspectorPeril
                         hearts[i].Draw(spriteBatch);
                     }
 
-                    for (int i = 0; i < timer.Length; i++)
-                        timer[i].Draw(spriteBatch);
+                    foreach (var timeDigit in timer)
+                        timeDigit.Draw(spriteBatch);
 
                     endScreen.Draw(spriteBatch);
+
                     spriteBatch.Draw(timer[3].Textures[timer[3].Frame], new Vector2(310, 208), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                     spriteBatch.Draw(timer[2].Textures[timer[2].Frame], new Vector2(335, 208), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                     spriteBatch.Draw(timer[1].Textures[timer[1].Frame], new Vector2(370, 208), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
@@ -944,9 +951,12 @@ namespace ProspectorPeril
             base.Draw(gameTime);
         }
 
+        /// <summary>
+        /// Restart the game
+        /// </summary>
         void Restart()
         {
-            // Game reset
+            #region Game Reset
             gameState = GameState.Menu;
             currentTime = 0.0f;
             splashTime = 3000;
@@ -961,24 +971,30 @@ namespace ProspectorPeril
             launcher.Frame = 0;
 
             UpdateTimer(0);
+            #endregion
 
-            // Player reset
+            #region Player Reset
             player.Position = Vector2.Zero;
             player.Position.X = ViewportCenter.X - player.SpriteCenter.X;
             player.Position.Y = 116;
             player.State = Player.PlayerState.Idle;
             player.Frame = 0;
+            #endregion
 
+            #region Enemy Reset
             foreach (var enemy in enemies)
             {
                 enemy.IsDamaged = false;
                 enemy.HasSpawned = false;
                 enemy.Visible = false;
             }
-            
+            #endregion
+
+            #region Music Reset
             currentMusicInstance = menuMusic.CreateInstance();
             currentMusicInstance.IsLooped = true;
             currentMusicInstance.Play();
+            #endregion
         }
     }
 }
