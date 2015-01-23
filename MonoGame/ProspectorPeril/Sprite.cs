@@ -158,14 +158,22 @@ namespace ProspectorPeril
         /// <summary>
         /// Center of the Sprite
         /// </summary>
+        public Vector2 SpriteOrigin
+        {
+            get
+            {
+                return new Vector2(Width / 2f, Height / 2f);
+            }
+        }
+        
         public Vector2 SpriteCenter
         {
             get
             {
-                return new Vector2(Width / 2f, Height / 2f) + Position;
+                return new Vector2(Position.X + SpriteOrigin.X, Position.Y + SpriteOrigin.Y);
             }
         }
-        
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -182,7 +190,7 @@ namespace ProspectorPeril
         {
             Collideable = shouldEnable;
 
-            var tempPos = new Vector3(SpriteCenter, 0.0f);
+            var tempPos = new Vector3(Position, 0.0f);
             CollisionSphere = new BoundingSphere(tempPos, Width / 2.5f);            
         }
 
@@ -293,7 +301,7 @@ namespace ProspectorPeril
         public void Draw(SpriteBatch spriteBatch)
         {
             if (Textures[Frame] != null && Visible)
-                spriteBatch.Draw(Textures[Frame], Position, null, Color.White * Alpha, Rotation, Vector2.Zero, Scale, SpriteEffects.None, RenderLayer);
+                spriteBatch.Draw(Textures[Frame], Position + SpriteOrigin, null, Color.White * Alpha, Rotation, SpriteOrigin, Scale, SpriteEffects.None, RenderLayer);
         }
 
         /// <summary>

@@ -11,7 +11,7 @@ namespace ProspectorPeril
         /// </summary>
         public Launcher()
         {
-            Layer = 6;
+            Layer = 7;
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace ProspectorPeril
         /// <param name="texture">A valid Texture2D this sprite will render</param>
         public Launcher(Texture2D texture) : base(texture)
         {
-            Layer = 6;
+            Layer = 7;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace ProspectorPeril
         public Launcher(List<Texture2D> textures)
             : base(textures)
         {
-            Layer = 6;
+            Layer = 7;
         }
 
         public override void Update(GameTime gameTime)

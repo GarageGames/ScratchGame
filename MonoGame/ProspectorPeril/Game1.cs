@@ -191,8 +191,7 @@ namespace ProspectorPeril
 
             // Scale and reposition player
             player.Scale = new Vector2(0.6f, 0.6f);
-            player.Position.X = ViewportCenter.X - player.SpriteCenter.X;
-            player.Position.Y = 116;
+            player.Position = new Vector2(178, 100);
 
             // Turn on its collision
             player.EnableCollision();
@@ -223,7 +222,7 @@ namespace ProspectorPeril
 
             // Scale and reposition
             launcher.Scale = new Vector2(0.75f, 0.75f);
-            launcher.Position = new Vector2(36.5f, 106.5f);            
+            launcher.Position = new Vector2(8, 85);
         }
 
         /// <summary>
@@ -535,7 +534,15 @@ namespace ProspectorPeril
         /// <param name="currentKeyState">Current keyboard state</param>
         /// <param name="currentMouseState">Current mouse state</param>
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
-        {            
+        {   
+            if (currentKeyState.IsKeyDown(Keys.Left))
+            {
+                launcher.Position.X -= 0.5f;
+            }
+            if (currentKeyState.IsKeyDown(Keys.Right))
+            {
+                launcher.Position.X += 0.5f;
+            }
             #region Mouse Handling
             // Store the mouse state if the left mouse button was pressed
             if (currentMouseState.LeftButton == ButtonState.Pressed)
@@ -729,6 +736,7 @@ namespace ProspectorPeril
                         }
                         
                         enemies[enemyIndex].Spawn(position, velocity);
+                        enemies[enemyIndex].Rotation = (float)random.NextDouble();
                     }
 
                     // Increase enemy index to the next slot
@@ -740,7 +748,7 @@ namespace ProspectorPeril
                 }                
 
                 // If the player below the fire, the game is over
-                if (player.Position.Y >= explosion.Position.Y && explosion.Position.Y <= 122 && explosion.Visible)
+                if ((player.Position.Y >= explosion.Position.Y && explosion.Position.Y <= 122 && explosion.Visible) || player.Lives <= 0)
                 {
                     // Kill player and play his sound
                     player.Die();
@@ -967,7 +975,7 @@ namespace ProspectorPeril
             explosion.Position.Y = hudContainer.Position.Y;
             explosion.Frame = 0;
 
-            launcher.Position = new Vector2(36.5f, 106.5f);
+            launcher.Position = new Vector2(8, 85);
             launcher.Frame = 0;
 
             UpdateTimer(0);
@@ -975,8 +983,7 @@ namespace ProspectorPeril
 
             #region Player Reset
             player.Position = Vector2.Zero;
-            player.Position.X = ViewportCenter.X - player.SpriteCenter.X;
-            player.Position.Y = 116;
+            player.Position = new Vector2(178, 100);
             player.State = Player.PlayerState.Idle;
             player.Frame = 0;
             #endregion
