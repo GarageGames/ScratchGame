@@ -12,7 +12,7 @@ namespace ProspectorPeril
         /// </summary>
         public Cart() : base()
         {
-            SpawnTimeRemaining = SpawnTiming = 3000f;
+            SpawnTimeRemaining = SpawnTiming = 1000f;
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace ProspectorPeril
         /// <param name="texture">A valid Texture2D this sprite will render</param>
         public Cart(Texture2D texture) : base(texture)
         {
-            SpawnTimeRemaining = SpawnTiming = 3000f;
+            SpawnTimeRemaining = SpawnTiming = 1000f;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace ProspectorPeril
         public Cart(List<Texture2D> textures)
             : base(textures)
         {
-            SpawnTimeRemaining = SpawnTiming = 3000f;
+            SpawnTimeRemaining = SpawnTiming = 1000f;
         }
 
         /// <summary>

@@ -332,13 +332,19 @@ namespace ProspectorPeril
             carts.Add(CreateCart());
             carts.Add(CreateCart());
             carts.Add(CreateCart());
+            carts.Add(CreateCart());
+            carts.Add(CreateCart());
 
             // Create rocks
             rocks.Add(CreateRock());
             rocks.Add(CreateRock());
             rocks.Add(CreateRock());
+            rocks.Add(CreateRock());
+            rocks.Add(CreateRock());
 
             // Create barrels
+            barrels.Add(CreateBarrel());
+            barrels.Add(CreateBarrel());
             barrels.Add(CreateBarrel());
             barrels.Add(CreateBarrel());
             barrels.Add(CreateBarrel());
@@ -536,14 +542,6 @@ namespace ProspectorPeril
         /// <param name="currentMouseState">Current mouse state</param>
         void UpdateInput(KeyboardState currentKeyState, MouseState currentMouseState)
         {   
-            if (currentKeyState.IsKeyDown(Keys.Left))
-            {
-                launcher.Position.X -= 0.5f;
-            }
-            if (currentKeyState.IsKeyDown(Keys.Right))
-            {
-                launcher.Position.X += 0.5f;
-            }
             #region Mouse Handling
             // Store the mouse state if the left mouse button was pressed
             if (currentMouseState.LeftButton == ButtonState.Pressed)
@@ -688,12 +686,12 @@ namespace ProspectorPeril
                     }
                     else if (enemyType == typeof(Barrel))
                     {
-                        position = new Vector2(random.Next(20, 300), 360);
+                        position = new Vector2(random.Next(10, 250), 360);
                         velocity = new Vector2(1.2f, -3.5f);
                     }
                     else if (enemyType == typeof(Cart))
                     {
-                        position = new Vector2(random.Next(0, 480), 360);
+                        position = new Vector2(random.Next(0, 250), 360);
                         velocity = new Vector2(random.Next(1, 2), -4);
                     }
 
@@ -729,16 +727,6 @@ namespace ProspectorPeril
                     player.Bounce();
                 }
             }
-        }
-
-        void UpdateRocks(float elapsedMilliseconds)
-        {
-
-        }
-
-        void UpdateBarrels(float elapsedMilliseconds)
-        {
-
         }
 
         /// <summary>
@@ -799,7 +787,7 @@ namespace ProspectorPeril
                 }
 
                 // If the player goes too far down, shoot him back up
-                if (player.Position.Y >= 424 && !player.IsAscending)
+                if (player.Position.Y >= 300 && !player.IsAscending)
                 {
                     // Change his speed so that he moves up
                     player.Speed -= 10;
