@@ -62,5 +62,11 @@ namespace ProspectorPeril
             Position = position;
             Visible = true;
         }
+
+        public void Stop()
+        {
+            Visible = false;
+            timer = 1000;
+        }
     }
 }

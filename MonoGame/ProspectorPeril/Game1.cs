@@ -1024,6 +1024,11 @@ namespace ProspectorPeril
                 rock.HasSpawned = false;
                 rock.Visible = false;
             }
+
+            foreach (var arrow in arrows)
+            {
+                arrow.Stop();                
+            }
             #endregion
 
             #region Music Reset
